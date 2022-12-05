@@ -15,7 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class FirstFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
+    private var _bindi ng: FragmentFirstBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
