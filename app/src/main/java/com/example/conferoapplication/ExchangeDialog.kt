@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
+import android.widget.SpinnerAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -33,13 +37,60 @@ class ExchangeDialog: BottomSheetDialogFragment() {
         return binding.root
     }
 
+    //test array
+    val currenc= arrayOf("EUR","USD", "RUB", "SEK")
+
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val spinner_1= binding.row1.currenciesSpinner
+        val spinner_2= binding.row2.currenciesSpinner
+        val arrayAdapter = ArrayAdapter<String>(requireActivity(),android.R.layout.simple_spinner_dropdown_item,currenc)
+
+        spinner_1.adapter = arrayAdapter
+        spinner_2.adapter = arrayAdapter
+
+        spinner_1.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val cur_text =  binding.row1.textCurrency
+                cur_text.text = currenc[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+
+        spinner_2.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                val cur_text =  binding.row2.textCurrency
+                cur_text.text = currenc[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
 
 
         vm.loading.bind {
             // TODO: Update ui loading state
+
         }
     }
 
@@ -50,5 +101,7 @@ class ExchangeDialog: BottomSheetDialogFragment() {
             }
         }
     }
+
+
 
 }
