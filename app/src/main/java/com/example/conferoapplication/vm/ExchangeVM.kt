@@ -17,7 +17,7 @@ class ExchangeVM @Inject constructor(private val exchangeDataSource: ExchangeDat
     val loading = _loading.asStateFlow()
 
     fun loadAvailableCurrencies() = viewModelScope.launch {
-        // TODO
+
     }
 
 
