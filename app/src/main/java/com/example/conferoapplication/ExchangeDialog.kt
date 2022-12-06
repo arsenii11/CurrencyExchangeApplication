@@ -10,6 +10,7 @@ import android.widget.Spinner
 import android.widget.SpinnerAdapter
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.conferoapplication.databinding.FragmentExchangeBinding
@@ -21,7 +22,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ExchangeDialog: BottomSheetDialogFragment() {
+class ExchangeDialog : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentExchangeBinding
     private val vm: ExchangeVM by viewModels()
@@ -38,65 +39,78 @@ class ExchangeDialog: BottomSheetDialogFragment() {
     }
 
     //test array
-    val currenc= arrayOf("EUR","USD", "RUB", "SEK")
-
+    val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val spinner_1= binding.row1.currenciesSpinner
-        val spinner_2= binding.row2.currenciesSpinner
-        val arrayAdapter = ArrayAdapter<String>(requireActivity(),android.R.layout.simple_spinner_dropdown_item,currenc)
+
+        val spinner_1 = binding.row1.currenciesSpinner
+        val spinner_2 = binding.row2.currenciesSpinner
+        val arrayAdapter = ArrayAdapter<String>(
+            requireActivity(),
+            android.R.layout.simple_spinner_dropdown_item,
+            currenc
+        )
 
         val doneButton = binding.buttonSecond
 
         spinner_1.adapter = arrayAdapter
         spinner_2.adapter = arrayAdapter
+        doneButton.setOnClickListener {
+            //TODO
+        }
+
+        val input_1 = binding.row1.editTextNumber
+        val input_2 = binding.row2.editTextNumber
+
+        vm.liveData.observe(this, Observer{
+            input_1.hint = it
+            input_2.hint = it
+        })
+
+
+        spinner_1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                val cur_text = binding.row1.textCurrency
+                cur_text.text = currenc[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+
+        spinner_2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                val cur_text = binding.row2.textCurrency
+                cur_text.text = currenc[position]
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
 
 
 
         vm.loading.bind {
 
-            doneButton.setOnClickListener {
-         //TODO
-            }
 
-
-            spinner_1.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-                    val cur_text =  binding.row1.textCurrency
-                    cur_text.text = currenc[position]
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
-
-            }
-
-            spinner_2.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
-                override fun onItemSelected(
-                    parent: AdapterView<*>?,
-                    view: View?,
-                    position: Int,
-                    id: Long
-                ) {
-
-                    val cur_text =  binding.row2.textCurrency
-                    cur_text.text = currenc[position]
-                }
-
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-
-                }
-
-            }
         }
     }
 
@@ -107,7 +121,6 @@ class ExchangeDialog: BottomSheetDialogFragment() {
             }
         }
     }
-
 
 
 }
