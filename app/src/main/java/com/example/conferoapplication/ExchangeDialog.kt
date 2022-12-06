@@ -49,48 +49,54 @@ class ExchangeDialog: BottomSheetDialogFragment() {
         val spinner_2= binding.row2.currenciesSpinner
         val arrayAdapter = ArrayAdapter<String>(requireActivity(),android.R.layout.simple_spinner_dropdown_item,currenc)
 
+        val doneButton = binding.buttonSecond
+
         spinner_1.adapter = arrayAdapter
         spinner_2.adapter = arrayAdapter
 
-        spinner_1.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-                val cur_text =  binding.row1.textCurrency
-                cur_text.text = currenc[position]
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
-
-        spinner_2.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-
-                val cur_text =  binding.row2.textCurrency
-                cur_text.text = currenc[position]
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-        }
 
 
         vm.loading.bind {
-            // TODO: Update ui loading state
 
+            doneButton.setOnClickListener {
+
+            }
+
+
+            spinner_1.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+                    val cur_text =  binding.row1.textCurrency
+                    cur_text.text = currenc[position]
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
+            }
+
+            spinner_2.onItemSelectedListener = object :AdapterView.OnItemSelectedListener{
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
+
+                    val cur_text =  binding.row2.textCurrency
+                    cur_text.text = currenc[position]
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
+            }
         }
     }
 
