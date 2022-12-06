@@ -7,6 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface ExchangeService {
+
     @GET("/convert")
     suspend fun getRates(
         @Query("api_key") access_key: String = Links.API_KEY,

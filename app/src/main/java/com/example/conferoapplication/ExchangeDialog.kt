@@ -43,6 +43,7 @@ class ExchangeDialog: BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         val spinner_1= binding.row1.currenciesSpinner
         val spinner_2= binding.row2.currenciesSpinner
         val arrayAdapter = ArrayAdapter<String>(requireActivity(),android.R.layout.simple_spinner_dropdown_item,currenc)
@@ -84,6 +85,7 @@ class ExchangeDialog: BottomSheetDialogFragment() {
             }
 
         }
+
 
 
         vm.loading.bind {
