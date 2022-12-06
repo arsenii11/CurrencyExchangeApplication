@@ -1,15 +1,11 @@
-package com.example.conferoapplication.help
+package com.example.conferoapplication.Utilities
 
-/**
- * All URL listed in this class
- */
 
 class Links {
 
     companion object {
 
         //Base URL
-
         const val BASE_URL = "https://api.getgeoapi.com/api/v2/currency/"
 
         //API KEY

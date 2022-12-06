@@ -36,6 +36,8 @@ class ExchangeDialog: BottomSheetDialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
         vm.loading.bind {
             // TODO: Update ui loading state
         }
