@@ -59,7 +59,7 @@ class ExchangeDialog: BottomSheetDialogFragment() {
         vm.loading.bind {
 
             doneButton.setOnClickListener {
-
+         //TODO
             }
 
 
