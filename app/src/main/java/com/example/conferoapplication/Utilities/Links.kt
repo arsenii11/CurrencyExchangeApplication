@@ -11,8 +11,6 @@ class Links {
         //API KEY
         const val API_KEY = "abce412468f5b2d4eea39485826cef2a8cb39903"
 
-        //COVERT URL
-        const val  CONVERT_URL = "convert"
 
     }
 
