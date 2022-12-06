@@ -1,6 +1,6 @@
 package com.example.conferoapplication
 
-import com.example.conferoapplication.service.ExchangeService
+import com.example.conferoapplication.service.CurrenciesService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +19,8 @@ class HiltModule {
     }
 
     @Provides
-    fun provideExchangeService(retrofit: Retrofit): ExchangeService {
-        return retrofit.create(ExchangeService::class.java)
+    fun provideExchangeService(retrofit: Retrofit): CurrenciesService {
+        return retrofit.create(CurrenciesService::class.java)
     }
 
 }
