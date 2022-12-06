@@ -22,7 +22,7 @@
             android:textSize="10pt" />
 
         <Spinner
-            android:id="@+id/planets_spinner"
+            android:id="@+id/currencies_spinner"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"
