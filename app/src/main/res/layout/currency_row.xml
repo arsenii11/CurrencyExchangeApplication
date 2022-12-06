@@ -23,9 +23,10 @@
 
         <Spinner
             android:id="@+id/currencies_spinner"
-            android:layout_width="match_parent"
+            android:layout_width="20dp"
             android:layout_height="wrap_content"
             android:spinnerMode="dropdown"
+
             android:layout_gravity="end" />
     </LinearLayout>
 
