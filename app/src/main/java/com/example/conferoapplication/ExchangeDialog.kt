@@ -37,7 +37,6 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     private var cur2: String? = null
 
 
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,15 +56,36 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         setOnClickListener()
 
 
+        val SwapBt = binding.swapButton
+        SwapBt.setOnClickListener {
+            Swap()
+        }
     }
 
 
     private fun Swap() {
+        cur1 = cur2.also {
+            cur2 = cur1
+        }
+
+        binding.row1.textCurrency.text = cur1
+        binding.row2.textCurrency.text = cur2
+
+        var num1 = binding.row1.editTextNumber.text.toString()
+        var num2 = binding.row2.editTextNumber.text.toString()
+
+        num1 = num2.also {
+            num2 = num1
+        }
+
+        binding.row1.editTextNumber.setText(num1.toString())
+        binding.row2.editTextNumber.setText(num2.toString())
+
 
     }
 
     private fun initSpinner() {
-    //test array
+        //test array
         val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
 
         val spinner_1 = binding.row1.currenciesSpinner
@@ -134,12 +154,12 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
             if (numberToConvert.isEmpty() || numberToConvert == "0") {
 
-                Toast.makeText(activity,"Internet unavailable",Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Internet unavailable", Toast.LENGTH_SHORT).show()
             }
 
             //check if internet is available
             else if (!Utility.isNetworkAvailable(activity)) {
-                Toast.makeText(activity,"Internet unavailable",Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Internet unavailable", Toast.LENGTH_SHORT).show()
             }
 
             //carry on and convert the value
@@ -153,8 +173,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     private fun doConversion() {
 
 
-       /* Utility.hideKeyboard(binding)*/
-
+        /* Utility.hideKeyboard(binding)*/
 
 
         val apiKey = Links.API_KEY
@@ -190,10 +209,10 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                             vm.convertedRate.value = rateForAmount
 
 
-                            val formattedString = String.format("%,.2f", vm.convertedRate.value)
+                            val finalString=  vm.convertedRate.value.toString()
 
 
-                            binding.row2.editTextNumber.setText(formattedString)
+                            binding.row2.editTextNumber.setText(finalString)
 
                         }
                     } else if (result.data?.status == "fail") {
