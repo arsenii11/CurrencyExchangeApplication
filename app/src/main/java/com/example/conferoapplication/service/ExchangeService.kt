@@ -8,7 +8,7 @@ import retrofit2.http.Query
 
 interface ExchangeService {
     @GET(Links.CONVERT_URL)
-    suspend fun getRates(
+    suspend fun convertCurrencies(
         @Query("api_key") access_key: String = Links.API_KEY,
         @Query("from") from: String,
         @Query("to") to: String,

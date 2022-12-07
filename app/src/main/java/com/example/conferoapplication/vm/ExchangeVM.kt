@@ -1,10 +1,11 @@
 package com.example.conferoapplication.vm
 
-import android.os.CountDownTimer
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.conferoapplication.repo.ExchangeDataSource
+import com.example.conferoapplication.Utilities.Resource
+import com.example.conferoapplication.Utilities.SingleLiveEvent
+import com.example.conferoapplication.model.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ExchangeVM @Inject constructor(private val exchangeDataSource: ExchangeDataSource) :
+class ExchangeVM @Inject constructor(private val converDI: ConvertDI) :
     ViewModel() {
 
 
@@ -24,37 +25,22 @@ class ExchangeVM @Inject constructor(private val exchangeDataSource: ExchangeDat
 
     }
 
+    //cached
+    private val _data = SingleLiveEvent<Resource<ApiResponse>>()
 
-    val liveData = MutableLiveData<String>()
+
+    //public
+    val data  =  _data
+    val convertedRate = MutableLiveData<Double>()
 
 
-    init {
-        startTimer()
-    }
-
-    fun startTimer() {
-        object : CountDownTimer(20000,1000){
-            override fun onFinish() {
-
+    //Public function to get the result of conversion
+    fun getConvertedData(access_key: String, from: String, to: String, amount: Double) {
+        viewModelScope.launch {
+            converDI.getConvertedData(access_key, from, to, amount).collect {
+                data.value = it
             }
-
-            override fun onTick(p0:Long) {
-                liveData.value = (p0/1000).toString()
-            }
-        }.start()
-
+        }
     }
-
-
-    var input_1: Float = 0.0F
-    var input_2: Float = 0.0F
-
-    val currentInput_1: MutableLiveData<Float> by lazy {
-        MutableLiveData<Float>()
-    }
-    val currentInput_2: MutableLiveData<Float> by lazy {
-        MutableLiveData<Float>()
-    }
-
 
 }
