@@ -84,8 +84,10 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     }
 
+
     private fun initSpinner() {
-        //test array
+
+    //test array
         val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
 
         val spinner_1 = binding.row1.currenciesSpinner
@@ -154,6 +156,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
             if (numberToConvert.isEmpty() || numberToConvert == "0") {
 
+
                 Toast.makeText(activity, "Internet unavailable", Toast.LENGTH_SHORT).show()
             }
 
@@ -171,6 +174,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
 
     private fun doConversion() {
+
 
 
         /* Utility.hideKeyboard(binding)*/
@@ -207,6 +211,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                             val rateForAmount = map[it]?.rate_for_amount
 
                             vm.convertedRate.value = rateForAmount
+
 
 
                             val finalString=  vm.convertedRate.value.toString()
