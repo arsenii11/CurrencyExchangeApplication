@@ -1,31 +1,42 @@
 package com.example.conferoapplication
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.SpinnerAdapter
+import android.widget.Toast
+import androidx.annotation.ColorInt
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.example.conferoapplication.Utilities.Links
+import com.example.conferoapplication.Utilities.Resource
+import com.example.conferoapplication.Utilities.Utility
 import com.example.conferoapplication.databinding.FragmentExchangeBinding
+import com.example.conferoapplication.model.Rates
 import com.example.conferoapplication.vm.ExchangeVM
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import java.util.*
 
 @AndroidEntryPoint
 class ExchangeDialog : BottomSheetDialogFragment() {
 
     private lateinit var binding: FragmentExchangeBinding
     private val vm: ExchangeVM by viewModels()
+    private var cur1: String? = null
+    private var cur2: String? = null
+
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,13 +49,24 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         return binding.root
     }
 
-    //test array
-    val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initSpinner()
 
+        setOnClickListener()
+
+
+    }
+
+
+    private fun Swap() {
+
+    }
+
+    private fun initSpinner() {
+    //test array
+        val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
 
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
@@ -54,22 +76,9 @@ class ExchangeDialog : BottomSheetDialogFragment() {
             currenc
         )
 
-        val doneButton = binding.buttonSecond
 
         spinner_1.adapter = arrayAdapter
         spinner_2.adapter = arrayAdapter
-        doneButton.setOnClickListener {
-            //TODO
-        }
-
-        val input_1 = binding.row1.editTextNumber
-        val input_2 = binding.row2.editTextNumber
-
-        vm.liveData.observe(this, Observer{
-            input_1.hint = it
-            input_2.hint = it
-        })
-
 
         spinner_1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
@@ -78,8 +87,9 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                 position: Int,
                 id: Long
             ) {
-                val cur_text = binding.row1.textCurrency
-                cur_text.text = currenc[position]
+                val cur_text_1 = binding.row1.textCurrency
+                cur_text_1.text = currenc[position]
+                cur1 = currenc[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -96,8 +106,9 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                 id: Long
             ) {
 
-                val cur_text = binding.row2.textCurrency
-                cur_text.text = currenc[position]
+                val cur_text_2 = binding.row2.textCurrency
+                cur_text_2.text = currenc[position]
+                cur2 = currenc[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -107,20 +118,101 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         }
 
 
-
-        vm.loading.bind {
-
-
-        }
     }
 
-    private fun <T> Flow<T>.bind(onChange: (T) -> Unit) {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.RESUMED) {
-                this@bind.collectLatest(onChange)
+
+    /**
+     * A method for handling click events in the UI
+     */
+
+    private fun setOnClickListener() {
+
+        binding.buttonDone.setOnClickListener {
+
+
+            val numberToConvert = binding.row1.editTextNumber.text.toString()
+
+            if (numberToConvert.isEmpty() || numberToConvert == "0") {
+
+                Toast.makeText(activity,"Internet unavailable",Toast.LENGTH_SHORT).show()
+            }
+
+            //check if internet is available
+            else if (!Utility.isNetworkAvailable(activity)) {
+                Toast.makeText(activity,"Internet unavailable",Toast.LENGTH_SHORT).show()
+            }
+
+            //carry on and convert the value
+            else {
+                doConversion()
             }
         }
     }
 
 
+    private fun doConversion() {
+
+
+       /* Utility.hideKeyboard(binding)*/
+
+
+
+        val apiKey = Links.API_KEY
+        val from = cur1.toString()
+        val to = cur2.toString()
+        val amount = binding.row1.editTextNumber.text.toString().toDouble()
+
+        //do the conversion
+        vm.getConvertedData(apiKey, from, to, amount)
+
+        //observe for changes in UI
+        observeUi()
+    }
+
+    @SuppressLint("SetTextI18n")
+    private fun observeUi() {
+
+
+        vm.data.observe(this, androidx.lifecycle.Observer { result ->
+
+            when (result.status) {
+                Resource.Status.SUCCESS -> {
+                    if (result.data?.status == "success") {
+
+                        val map: Map<String, Rates>
+
+                        map = result.data.rates
+
+                        map.keys.forEach {
+
+                            val rateForAmount = map[it]?.rate_for_amount
+
+                            vm.convertedRate.value = rateForAmount
+
+
+                            val formattedString = String.format("%,.2f", vm.convertedRate.value)
+
+
+                            binding.row2.editTextNumber.setText(formattedString)
+
+                        }
+                    } else if (result.data?.status == "fail") {
+
+                    }
+                }
+                Resource.Status.ERROR -> {
+
+                }
+
+                Resource.Status.LOADING -> {
+
+                }
+            }
+        })
+
+    }
+
 }
+
+
+
