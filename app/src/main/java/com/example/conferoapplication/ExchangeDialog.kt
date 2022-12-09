@@ -204,12 +204,12 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
                         map.keys.forEach {
 
-                            val rateForAmount = map[it]?.rate_for_amount
+                            val result = map[it]?.rate_for_amount
 
-                            vm.convertedRate.value = rateForAmount
+                            vm.convertedRate.value = result
 
-
-                            val finalString=  vm.convertedRate.value.toString()
+                            Locale.setDefault(Locale.US);
+                            val finalString=  String.format("%,.2f", vm.convertedRate.value)
 
 
                             binding.row2.editTextNumber.setText(finalString)
