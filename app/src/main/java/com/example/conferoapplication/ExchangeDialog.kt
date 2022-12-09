@@ -55,19 +55,24 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         initSpinner()
 
 
+        onDoneClickListener()
+
+        val SwapBt = binding.swapButton
+        SwapBt.setOnClickListener {
+            Swap()
+        }
+
+        progress = binding.progressBar
+
+    }
+
+
+
+    private fun onDoneClickListener(){
         binding.buttonDone.setOnClickListener {
 
             activity?.let { Utility.hideKeyboard(it) }
 
-            val dialog = Dialog(requireActivity())
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false)
-            dialog.setContentView(R.layout.dialog_layout)
-            dialog.show()
-
-            view.delayOnLifecycle(2000L){
-                dialog.dismiss()
-            }
 
 
 
@@ -82,20 +87,25 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                 showSnackbar("Internet unavailable")
             }
 
-            //carry on and convert the value
+            //convert the value
             else {
+                showSuccessDialog()
                 doConversion()
             }
         }
+    }
 
 
-        val SwapBt = binding.swapButton
-        SwapBt.setOnClickListener {
-            Swap()
+    private fun showSuccessDialog(){
+        val dialog = Dialog(requireActivity())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.dialog_layout)
+        dialog.show()
+
+        view?.delayOnLifecycle(1000L){
+            dialog.dismiss()
         }
-
-        progress = binding.progressBar
-
     }
 
 
@@ -236,41 +246,33 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                         val map: Map<String, Rates>
 
                         map = result.data.rates
-
                         map.keys.forEach {
 
-                            val result = map[it]?.rate_for_amount
+                            val convertedValue = map[it]?.rate_for_amount
+                            vm.convertedRate.value = convertedValue
 
-                            vm.convertedRate.value = result
-
+                            //Formatting output
                             Locale.setDefault(Locale.ROOT);
                             val finalString = String.format("%,.2f", vm.convertedRate.value)
 
-
                             binding.row2.editTextNumber.setText(finalString)
-
                         }
                         progress.visibility = View.GONE
-
                     }
                     else if (result.data?.status == "fail") {
 
                         progress.visibility = View.GONE
                         showSnackbar("ERROR")
 
-
-
                     }
                 }
                 Resource.Status.ERROR -> {
                     progress.visibility = View.GONE
                     showSnackbar("ERROR")
-
                 }
 
 
                 Resource.Status.LOADING -> {
-
                     progress.visibility = View.GONE
                 }
             }
