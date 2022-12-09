@@ -143,9 +143,19 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         var num1 = binding.row1.editTextNumber.text.toString()
         var num2 = binding.row2.editTextNumber.text.toString()
 
-        num1 = num2.also {
+
+
+
+        //C точки зрения UX поле результата логично оставить пустым, поэтому:
+        /*num1 = num2.also {
             num2 = num1
+        }*/
+
+        num1 = num2.also {
+            num2 = ""
         }
+
+
 
         binding.row1.editTextNumber.setText(num1.toString())
         binding.row2.editTextNumber.setText(num2.toString())
