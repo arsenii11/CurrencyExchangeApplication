@@ -1,19 +1,19 @@
 package com.example.conferoapplication
 
 import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
+import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Toast
-import androidx.annotation.ColorInt
+import android.view.Window
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.lifecycle.coroutineScope
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.conferoapplication.Utilities.Links
 import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.Utilities.Utility
@@ -23,9 +23,7 @@ import com.example.conferoapplication.vm.ExchangeVM
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.util.*
 
 @AndroidEntryPoint
@@ -35,6 +33,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     private val vm: ExchangeVM by viewModels()
     private var cur1: String? = null
     private var cur2: String? = null
+    private lateinit var progress: ProgressBar
 
 
     override fun onCreateView(
@@ -49,17 +48,77 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     }
 
 
+
+    @SuppressLint("UseRequireInsteadOfGet")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initSpinner()
 
-        setOnClickListener()
+
+        binding.buttonDone.setOnClickListener {
+
+            activity?.let { Utility.hideKeyboard(it) }
+
+            val dialog = Dialog(requireActivity())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.dialog_layout)
+            dialog.show()
+
+            view.delayOnLifecycle(2000L){
+                dialog.dismiss()
+            }
+
+
+
+            val numberToConvert = binding.row1.editTextNumber.text.toString()
+
+            if (numberToConvert.isEmpty() || numberToConvert == "0") {
+                showSnackbar("Empty input")
+            }
+
+            //check if internet is available
+            else if (!Utility.isNetworkAvailable(activity)) {
+                showSnackbar("Internet unavailable")
+            }
+
+            //carry on and convert the value
+            else {
+                doConversion()
+            }
+        }
 
 
         val SwapBt = binding.swapButton
         SwapBt.setOnClickListener {
             Swap()
         }
+
+        progress = binding.progressBar
+
+    }
+
+
+   private fun View.delayOnLifecycle(
+        durationInMillis: Long,
+        dispatcher: CoroutineDispatcher = Dispatchers.Main,
+        block: () -> Unit
+    ): Job? = findViewTreeLifecycleOwner()?.let { lifecycleOwner ->
+        lifecycleOwner.lifecycle.coroutineScope.launch(dispatcher) {
+            delay(durationInMillis)
+            block()
+        }
+}
+
+
+
+
+    @SuppressLint("UseRequireInsteadOfGet")
+    private fun showSnackbar(text: String){
+        Snackbar.make(binding.ExchangeLayout,text, Snackbar.LENGTH_LONG)
+            .setTextColor(ContextCompat.getColor(activity!!, R.color.white))
+            .background(ContextCompat.getColor(activity!!, R.color.red))
+            .show()
     }
 
 
@@ -84,9 +143,10 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     }
 
+
     private fun initSpinner() {
         //test array
-        val currenc = arrayOf("EUR", "USD", "RUB", "SEK")
+        val currenc = arrayOf("EUR", "USD", "RUB", "SEK","ANG","BYN","COP","PLN")
 
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
@@ -140,40 +200,15 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     }
 
-
-    /**
-     * A method for handling click events in the UI
-     */
-
-    private fun setOnClickListener() {
-
-        binding.buttonDone.setOnClickListener {
-
-
-            val numberToConvert = binding.row1.editTextNumber.text.toString()
-
-            if (numberToConvert.isEmpty() || numberToConvert == "0") {
-
-                Toast.makeText(activity, "Internet unavailable", Toast.LENGTH_SHORT).show()
-            }
-
-            //check if internet is available
-            else if (!Utility.isNetworkAvailable(activity)) {
-                Toast.makeText(activity, "Internet unavailable", Toast.LENGTH_SHORT).show()
-            }
-
-            //carry on and convert the value
-            else {
-                doConversion()
-            }
-        }
+    private fun Snackbar.background(color: Int): Snackbar {
+        this.view.setBackgroundColor(color)
+        return this
     }
 
 
     private fun doConversion() {
 
-
-        /* Utility.hideKeyboard(binding)*/
+        progress.visibility = View.VISIBLE
 
 
         val apiKey = Links.API_KEY
@@ -188,7 +223,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         observeUi()
     }
 
-    @SuppressLint("SetTextI18n")
+    @SuppressLint("SetTextI18n", "UseRequireInsteadOfGet")
     private fun observeUi() {
 
 
@@ -208,28 +243,63 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
                             vm.convertedRate.value = result
 
-                            Locale.setDefault(Locale.US);
-                            val finalString=  String.format("%,.2f", vm.convertedRate.value)
+                            Locale.setDefault(Locale.ROOT);
+                            val finalString = String.format("%,.2f", vm.convertedRate.value)
 
 
                             binding.row2.editTextNumber.setText(finalString)
 
                         }
-                    } else if (result.data?.status == "fail") {
+                        progress.visibility = View.GONE
+
+                    }
+                    else if (result.data?.status == "fail") {
+
+                        progress.visibility = View.GONE
+                        showSnackbar("ERROR")
+
+
 
                     }
                 }
                 Resource.Status.ERROR -> {
+                    progress.visibility = View.GONE
+                    showSnackbar("ERROR")
 
                 }
 
+
                 Resource.Status.LOADING -> {
 
+                    progress.visibility = View.GONE
                 }
             }
         })
 
     }
+
+
+
+/*    private fun addProgressBar(): ProgressBar {
+        // Create progressBar dynamically...
+        val progressBar = ProgressBar(activity)
+        progressBar.layoutParams = ConstraintLayout.LayoutParams(
+            ViewGroup.LayoutParams.WRAP_CONTENT,
+            ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        progressBar.visibility = View.INVISIBLE
+
+        // Add ProgressBar to LinearLayout
+        binding.ExchangeLayout.addView(progressBar)
+
+
+        progressBar.id = View.generateViewId()
+
+
+
+        return progressBar
+    }*/
+
 
 }
 
