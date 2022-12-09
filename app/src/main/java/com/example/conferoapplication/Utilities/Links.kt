@@ -5,7 +5,7 @@ class Links {
 
     companion object {
 
-        //Base URL
+        //BASE URL
         const val BASE_URL = "https://api.getgeoapi.com/api/v2/currency/"
 
         //API KEY

@@ -10,12 +10,12 @@ import android.view.inputmethod.InputMethodManager
 import com.example.conferoapplication.databinding.FragmentExchangeBinding
 
 object Utility {
-    //hide keyboard
+
+
+    //Hide keyboard
  fun hideKeyboard(activity: Activity) {
         val input: InputMethodManager = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        //Find the currently focused view, so we can grab the correct window token from it.
         var view: View? = activity.currentFocus
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = View(activity)
         }
@@ -23,7 +23,7 @@ object Utility {
     }
 
 
-    //check if network is connected
+    //Network connection check
     fun isNetworkAvailable(context: Context?): Boolean {
         if (context == null) return false
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

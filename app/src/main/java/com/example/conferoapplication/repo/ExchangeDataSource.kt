@@ -1,7 +1,5 @@
 package com.example.conferoapplication.repo
 
-import com.example.conferoapplication.model.Currency
-import com.example.conferoapplication.service.CurrenciesService
 import com.example.conferoapplication.service.ExchangeService
 import javax.inject.Inject
 
