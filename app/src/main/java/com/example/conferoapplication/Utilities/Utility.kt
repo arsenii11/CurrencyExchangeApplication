@@ -11,17 +11,16 @@ import com.example.conferoapplication.databinding.FragmentExchangeBinding
 
 object Utility {
     //hide keyboard
- /*   fun hideKeyboard(activity: FragmentExchangeBinding) {
-        val imm: InputMethodManager =
-            .getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+ fun hideKeyboard(activity: Activity) {
+        val input: InputMethodManager = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
         var view: View? = activity.currentFocus
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             view = View(activity)
         }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
-    }*/
+        input.hideSoftInputFromWindow(view.getWindowToken(), 0)
+    }
 
 
     //check if network is connected
