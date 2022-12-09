@@ -20,7 +20,7 @@ class ExchangeVM @Inject constructor(private val converDI: ConvertDI) :
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
-
+    //TODO
     fun loadAvailableCurrencies() = viewModelScope.launch {
 
     }
