@@ -1,15 +1,14 @@
 package com.example.conferoapplication
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
-import android.os.Handler
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
@@ -33,6 +32,8 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     private val vm: ExchangeVM by viewModels()
     private var cur1: String? = null
     private var cur2: String? = null
+    private var num1: String? = null
+    private var num2: String? = null
     private lateinit var progress: ProgressBar
 
 
@@ -46,7 +47,6 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
         return binding.root
     }
-
 
 
     @SuppressLint("UseRequireInsteadOfGet")
@@ -66,14 +66,35 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     }
 
+    override fun onSaveInstanceState(savedInstanceState: Bundle) {
+        super.onSaveInstanceState(savedInstanceState)
+
+        savedInstanceState.putString("cur1", cur1)
+        savedInstanceState.putString("cur2", cur2)
+        savedInstanceState.putString("num1", num1)
+        savedInstanceState.putString("num2", num2)
 
 
-    private fun onDoneClickListener(){
+    }
+
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+
+        cur1 = savedInstanceState?.getString("cur1")
+        cur2 = savedInstanceState?.getString("cur2")
+        num1 = savedInstanceState?.getString("num1")
+        num2 = savedInstanceState?.getString("num2")
+
+        setParameters()
+
+    }
+
+
+    private fun onDoneClickListener() {
         binding.buttonDone.setOnClickListener {
 
             activity?.let { Utility.hideKeyboard(it) }
-
-
 
 
             val numberToConvert = binding.row1.editTextNumber.text.toString()
@@ -96,20 +117,20 @@ class ExchangeDialog : BottomSheetDialogFragment() {
     }
 
 
-    private fun showSuccessDialog(){
+    private fun showSuccessDialog() {
         val dialog = Dialog(requireActivity())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_layout)
         dialog.show()
 
-        view?.delayOnLifecycle(1000L){
+        view?.delayOnLifecycle(1000L) {
             dialog.dismiss()
         }
     }
 
 
-   private fun View.delayOnLifecycle(
+    private fun View.delayOnLifecycle(
         durationInMillis: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.Main,
         block: () -> Unit
@@ -118,32 +139,35 @@ class ExchangeDialog : BottomSheetDialogFragment() {
             delay(durationInMillis)
             block()
         }
-}
-
-
+    }
 
 
     @SuppressLint("UseRequireInsteadOfGet")
-    private fun showSnackbar(text: String){
-        Snackbar.make(binding.ExchangeLayout,text, Snackbar.LENGTH_LONG)
+    private fun showSnackbar(text: String) {
+        Snackbar.make(binding.ExchangeLayout, text, Snackbar.LENGTH_LONG)
             .setTextColor(ContextCompat.getColor(activity!!, R.color.white))
             .background(ContextCompat.getColor(activity!!, R.color.red))
             .show()
     }
 
 
+    private fun setParameters() {
+
+        binding.row1.textCurrency.text = cur1
+        binding.row2.textCurrency.text = cur2
+
+        if (num1 != null) binding.row1.editTextNumber.setText(num1.toString())
+        if (num2 != null) binding.row2.editTextNumber.setText(num2.toString())
+    }
+
     private fun Swap() {
         cur1 = cur2.also {
             cur2 = cur1
         }
 
-        binding.row1.textCurrency.text = cur1
-        binding.row2.textCurrency.text = cur2
 
-        var num1 = binding.row1.editTextNumber.text.toString()
-        var num2 = binding.row2.editTextNumber.text.toString()
-
-
+        num1 = binding.row1.editTextNumber.text.toString()
+        num2 = binding.row2.editTextNumber.text.toString()
 
 
         //C точки зрения UX поле результата логично оставить пустым, поэтому:
@@ -156,9 +180,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         }
 
 
-
-        binding.row1.editTextNumber.setText(num1.toString())
-        binding.row2.editTextNumber.setText(num2.toString())
+        setParameters()
 
 
     }
@@ -166,7 +188,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     private fun initSpinner() {
         //test array
-        val currenc = arrayOf("EUR", "USD", "RUB", "SEK","ANG","BYN","COP","PLN")
+        val currenc = arrayOf("EUR", "USD", "RUB", "SEK", "ANG", "BYN", "COP", "PLN")
 
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
@@ -268,8 +290,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
                             binding.row2.editTextNumber.setText(finalString)
                         }
                         progress.visibility = View.GONE
-                    }
-                    else if (result.data?.status == "fail") {
+                    } else if (result.data?.status == "fail") {
 
                         progress.visibility = View.GONE
                         showSnackbar("ERROR")
@@ -289,7 +310,6 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         })
 
     }
-
 
 
 /*    private fun addProgressBar(): ProgressBar {
