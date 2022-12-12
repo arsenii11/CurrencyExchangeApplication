@@ -170,14 +170,16 @@ class ExchangeDialog : BottomSheetDialogFragment() {
         num2 = binding.row2.editTextNumber.text.toString()
 
 
-        //C точки зрения UX поле результата логично оставить пустым, поэтому:
-        /*num1 = num2.also {
-            num2 = num1
-        }*/
 
         num1 = num2.also {
-            num2 = ""
+            num2 = num1
         }
+
+
+        //C точки зрения UX поле результата логично оставить пустым, поэтому как вариантЖ
+/*        num1 = num2.also {
+            num2 = ""
+        }*/
 
 
         setParameters()
@@ -188,7 +190,7 @@ class ExchangeDialog : BottomSheetDialogFragment() {
 
     private fun initSpinner() {
         //test array
-        val currenc = arrayOf("EUR", "USD", "RUB", "SEK", "ANG", "BYN", "COP", "PLN")
+        val currenc = arrayOf("EUR", "USD", "RUB", "SEK", "ANG", "BYN", "COP", "PLN", "UAH","YER","VND","PHP","ISK","KHR","BRL","IDR", "SOS")
 
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner

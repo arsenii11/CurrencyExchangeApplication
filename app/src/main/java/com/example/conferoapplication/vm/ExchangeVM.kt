@@ -26,11 +26,10 @@ class ExchangeVM @Inject constructor(private val converDI: ConvertDI) :
     }
 
     //cached
-    private val _data = SingleLiveEvent<Resource<ApiResponse>>()
+    val data = SingleLiveEvent<Resource<ApiResponse>>()
 
 
     //public
-    val data  =  _data
     val convertedRate = MutableLiveData<Double>()
 
 
