@@ -3,7 +3,7 @@ package com.example.conferoapplication.vm
 import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.model.ApiResponse
 import com.example.conferoapplication.repo.ExchangeDataSource
-import com.example.conferoapplication.service.BaseDataSource
+import com.example.conferoapplication.data.service.BaseDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

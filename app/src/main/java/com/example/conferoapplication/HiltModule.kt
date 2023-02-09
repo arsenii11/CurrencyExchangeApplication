@@ -2,8 +2,8 @@ package com.example.conferoapplication
 
 import com.example.conferoapplication.Utilities.Links
 import com.example.conferoapplication.repo.ExchangeDataSource
-import com.example.conferoapplication.service.CurrenciesService
-import com.example.conferoapplication.service.ExchangeService
+import com.example.conferoapplication.data.service.CurrenciesService
+import com.example.conferoapplication.data.service.ExchangeService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module

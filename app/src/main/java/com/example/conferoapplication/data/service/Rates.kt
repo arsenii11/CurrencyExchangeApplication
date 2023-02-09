@@ -1,4 +1,4 @@
-package com.example.conferoapplication.service
+package com.example.conferoapplication.data.service
 
 data class Rates(
     val currency_name: String,

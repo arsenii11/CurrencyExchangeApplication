@@ -1,4 +1,4 @@
-package com.example.conferoapplication.service
+package com.example.conferoapplication.data.service
 
 
 import retrofit2.Response
