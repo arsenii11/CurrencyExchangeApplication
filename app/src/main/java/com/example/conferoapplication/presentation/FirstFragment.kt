@@ -1,4 +1,4 @@
-package com.example.conferoapplication
+package com.example.conferoapplication.presentation
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
+import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.FragmentFirstBinding
 import dagger.hilt.android.AndroidEntryPoint
 
