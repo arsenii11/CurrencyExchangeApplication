@@ -11,6 +11,5 @@ interface CurrenciesService {
     suspend fun getSupportedCurrencies(
         @Query("api_key") access_key: String = Links.API_KEY,
         @Query("format") format: String = "JSON",
-    ): Map<String, String>
-
+    ): List<Currencies>
 }
