@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
-import androidx.annotation.Nullable
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
@@ -17,7 +16,7 @@ import com.example.conferoapplication.Utilities.Links
 import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.Utilities.Utility
 import com.example.conferoapplication.databinding.FragmentExchangeBinding
-import com.example.conferoapplication.model.Rates
+import com.example.conferoapplication.data.model.Rates
 import com.example.conferoapplication.vm.ExchangeVM
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar

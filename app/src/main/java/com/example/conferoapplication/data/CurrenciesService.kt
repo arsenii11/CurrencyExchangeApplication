@@ -1,4 +1,4 @@
-package com.example.conferoapplication.data.service
+package com.example.conferoapplication.data
 
 import com.example.conferoapplication.Utilities.Links
 import retrofit2.http.GET

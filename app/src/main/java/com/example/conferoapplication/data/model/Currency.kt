@@ -1,4 +1,4 @@
-package com.example.conferoapplication.model
+package com.example.conferoapplication.data.model
 
 data class Currency(val symbol: String, val displayName: String)
 

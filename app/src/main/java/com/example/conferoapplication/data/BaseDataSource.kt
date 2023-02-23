@@ -1,8 +1,7 @@
-package com.example.conferoapplication.data.service
+package com.example.conferoapplication.data
 
 
 import retrofit2.Response
-import android.util.Log
 import com.example.conferoapplication.Utilities.Resource
 import java.lang.Exception
 

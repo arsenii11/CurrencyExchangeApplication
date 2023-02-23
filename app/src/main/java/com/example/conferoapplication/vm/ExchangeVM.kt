@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.Utilities.SingleLiveEvent
-import com.example.conferoapplication.model.ApiResponse
+import com.example.conferoapplication.data.model.ApiResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

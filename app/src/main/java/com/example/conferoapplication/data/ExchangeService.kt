@@ -1,7 +1,7 @@
-package com.example.conferoapplication.data.service
+package com.example.conferoapplication.data
 
 import com.example.conferoapplication.Utilities.Links
-import com.example.conferoapplication.model.ApiResponse
+import com.example.conferoapplication.data.model.ApiResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Query
