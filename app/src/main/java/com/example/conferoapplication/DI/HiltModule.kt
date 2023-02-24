@@ -1,7 +1,8 @@
-package com.example.conferoapplication
+package com.example.conferoapplication.DI
 
+import com.example.conferoapplication.BuildConfig
 import com.example.conferoapplication.Utilities.Links
-import com.example.conferoapplication.repo.ExchangeDataSource
+import com.example.conferoapplication.data.repo.ExchangeDataSource
 import com.example.conferoapplication.data.ExchangeService
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder

@@ -1,4 +1,4 @@
-package com.example.conferoapplication.repo
+package com.example.conferoapplication.data.repo
 
 import com.example.conferoapplication.data.ExchangeService
 import javax.inject.Inject

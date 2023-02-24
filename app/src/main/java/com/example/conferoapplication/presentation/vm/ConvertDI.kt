@@ -1,8 +1,8 @@
-package com.example.conferoapplication.vm
+package com.example.conferoapplication.presentation.vm
 
 import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.data.model.ApiResponse
-import com.example.conferoapplication.repo.ExchangeDataSource
+import com.example.conferoapplication.data.repo.ExchangeDataSource
 import com.example.conferoapplication.data.BaseDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

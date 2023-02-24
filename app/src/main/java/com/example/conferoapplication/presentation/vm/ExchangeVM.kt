@@ -1,4 +1,4 @@
-package com.example.conferoapplication.vm
+package com.example.conferoapplication.presentation.vm
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

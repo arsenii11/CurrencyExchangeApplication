@@ -17,7 +17,7 @@ import com.example.conferoapplication.Utilities.Resource
 import com.example.conferoapplication.Utilities.Utility
 import com.example.conferoapplication.databinding.FragmentExchangeBinding
 import com.example.conferoapplication.data.model.Rates
-import com.example.conferoapplication.vm.ExchangeVM
+import com.example.conferoapplication.presentation.vm.ExchangeVM
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
