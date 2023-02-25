@@ -1,10 +1,11 @@
-package com.example.conferoapplication.presentation
+package com.example.conferoapplication.presentation.Splashscreen
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.ImageView
 import com.example.conferoapplication.R
+import com.example.conferoapplication.presentation.MainActivity
 
 class Splashscreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
