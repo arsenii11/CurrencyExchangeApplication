@@ -14,7 +14,7 @@ class Splashscreen : AppCompatActivity() {
 
         val iv_note: ImageView by lazy { findViewById(R.id.rediss) }
         iv_note.alpha = 0f
-        iv_note.animate().setDuration(2000).alpha(1f).withEndAction() {
+        iv_note.animate().setDuration(1500).alpha(1f).withEndAction() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
