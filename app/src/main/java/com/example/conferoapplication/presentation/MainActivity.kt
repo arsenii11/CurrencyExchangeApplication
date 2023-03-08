@@ -1,5 +1,7 @@
 package com.example.conferoapplication.presentation
 
+import android.app.Notification
+import android.app.NotificationManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -15,6 +17,7 @@ import com.example.conferoapplication.MyReceiver
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import okhttp3.internal.notify
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -64,4 +67,6 @@ class MainActivity : AppCompatActivity() {
         return navController.navigateUp(appBarConfiguration)
                 || super.onSupportNavigateUp()
     }
+
+
 }

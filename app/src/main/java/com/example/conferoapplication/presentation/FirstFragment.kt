@@ -1,10 +1,13 @@
 package com.example.conferoapplication.presentation
 
+import android.app.Notification
+import android.app.NotificationManager
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.FragmentFirstBinding
@@ -36,12 +39,25 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.buttonFirst.setOnClickListener {
+            showNotification()
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+
         }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun showNotification(){
+        val notification = Notification.Builder(activity)
+            .setContentTitle("Notification")
+            .setContentText("MainNotification")
+            .setSmallIcon(R.drawable.money)
+            .build()
+
+        val notificationManager = activity?.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(1, notification)
     }
 }
