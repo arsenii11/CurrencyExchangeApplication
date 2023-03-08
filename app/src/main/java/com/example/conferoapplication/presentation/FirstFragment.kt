@@ -1,13 +1,16 @@
 package com.example.conferoapplication.presentation
 
 import android.app.Notification
+import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationCompat
 import androidx.navigation.fragment.findNavController
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.FragmentFirstBinding
@@ -51,13 +54,27 @@ class FirstFragment : Fragment() {
     }
 
     private fun showNotification(){
-        val notification = Notification.Builder(activity)
+        val notificationManager = activity?.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
+        val notificationChannel = NotificationChannel(
+            CHANNEL_ID,
+            CHANNEL_NAME,
+            NotificationManager.IMPORTANCE_DEFAULT
+        )
+            notificationManager.createNotificationChannel(notificationChannel)
+        }
+        val notification = NotificationCompat.Builder(requireActivity(), CHANNEL_ID)
             .setContentTitle("Notification")
             .setContentText("MainNotification")
             .setSmallIcon(R.drawable.money)
             .build()
 
-        val notificationManager = activity?.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1, notification)
+       notificationManager.notify(1, notification)
+    }
+
+    companion object{
+        const val CHANNEL_ID = "channel_id"
+        const val CHANNEL_NAME = "channel_name"
     }
 }
