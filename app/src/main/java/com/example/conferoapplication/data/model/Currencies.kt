@@ -1,4 +1,4 @@
-package com.example.conferoapplication.data
+package com.example.conferoapplication.data.model
 
 import kotlinx.serialization.Serializable
 

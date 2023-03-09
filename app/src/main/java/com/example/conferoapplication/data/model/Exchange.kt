@@ -1,4 +1,5 @@
-package com.example.conferoapplication.data
+package com.example.conferoapplication.data.model
+
 
 data class Exchange(
     val amount: String,

@@ -1,6 +1,6 @@
 package com.example.conferoapplication.data.model
 
-data class Currency(val symbol: String, val displayName: String)
+
 
 data class ApiResponse(
     val amount: String,

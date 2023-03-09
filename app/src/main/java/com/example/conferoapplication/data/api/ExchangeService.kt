@@ -1,4 +1,4 @@
-package com.example.conferoapplication.data
+package com.example.conferoapplication.data.api
 
 import com.example.conferoapplication.Utilities.Links
 import com.example.conferoapplication.data.model.ApiResponse

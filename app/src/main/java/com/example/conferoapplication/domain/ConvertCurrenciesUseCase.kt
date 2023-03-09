@@ -1,4 +1,6 @@
 package com.example.conferoapplication.domain
 
-class ConvertCurrenciesUseCase {
+import javax.inject.Inject
+
+class ConvertCurrenciesUseCase @Inject constructor() {
 }

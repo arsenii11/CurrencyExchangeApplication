@@ -1,6 +1,6 @@
 package com.example.conferoapplication.data.repo
 
-import com.example.conferoapplication.data.ExchangeService
+import com.example.conferoapplication.data.api.ExchangeService
 import javax.inject.Inject
 
 class ExchangeDataSource @Inject constructor(private val exchangeService: ExchangeService) {

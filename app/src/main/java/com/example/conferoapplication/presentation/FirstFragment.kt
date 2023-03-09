@@ -56,8 +56,10 @@ class FirstFragment : Fragment() {
     private fun showNotification(){
         val notificationManager = activity?.getSystemService(AppCompatActivity.NOTIFICATION_SERVICE) as NotificationManager
 
+
+        lateinit var notificationChannel:NotificationChannel
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
-        val notificationChannel = NotificationChannel(
+        notificationChannel = NotificationChannel(
             CHANNEL_ID,
             CHANNEL_NAME,
             NotificationManager.IMPORTANCE_DEFAULT
