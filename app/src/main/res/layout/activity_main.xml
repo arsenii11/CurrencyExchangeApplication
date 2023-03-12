@@ -1,34 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/ExchangeLayout"
+    android:padding="@dimen/page_padding"
     tools:context=".presentation.MainActivity">
 
-    <com.google.android.material.appbar.AppBarLayout
+    <include
+        android:id="@+id/row1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/Theme.ConferoApplication.AppBarOverlay">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/currency_row"/>
 
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/Theme.ConferoApplication.PopupOverlay" />
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/swapButton"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:src="@drawable/ic_swap"
+        android:background="@android:color/transparent"
+        android:minHeight="48dp"
+        android:minWidth="48dp"
+        android:tint="?colorOnSurface"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row1"/>
 
-    </com.google.android.material.appbar.AppBarLayout>
+    <include
+        android:id="@+id/row2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/swapButton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        layout="@layout/currency_row"/>
 
-    <include layout="@layout/content_main" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab"
+    <Button
+        android:id="@+id/button_done"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="16dp"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        android:layout_marginTop="32dp"
+        android:text="@string/Done"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/row2" />
 
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.815" />
+</androidx.constraintlayout.widget.ConstraintLayout>
