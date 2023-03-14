@@ -1,4 +1,4 @@
-package com.example.conferoapplication
+package com.example.conferoapplication.Utilities
 
 import android.content.BroadcastReceiver
 import android.content.Context

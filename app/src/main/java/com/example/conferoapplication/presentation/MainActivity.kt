@@ -2,19 +2,12 @@ package com.example.conferoapplication.presentation
 
 import android.annotation.SuppressLint
 import android.app.Dialog
-import android.app.Notification
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.Window
 import android.widget.AdapterView
@@ -22,10 +15,9 @@ import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import com.example.conferoapplication.MyReceiver
+import com.example.conferoapplication.Utilities.MyReceiver
 import com.example.conferoapplication.R
 import com.example.conferoapplication.Utilities.Links
 import com.example.conferoapplication.Utilities.Resource
@@ -35,7 +27,6 @@ import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.conferoapplication.presentation.vm.ExchangeVM
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
-import okhttp3.internal.notify
 import java.util.*
 
 @AndroidEntryPoint
@@ -88,18 +79,18 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-/*
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
 
-        cur1 = savedInstanceState?.getString("cur1")
-        cur2 = savedInstanceState?.getString("cur2")
-        num1 = savedInstanceState?.getString("num1")
-        num2 = savedInstanceState?.getString("num2")
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        savedInstanceState.let { super.onRestoreInstanceState(it) }
+
+        cur1 = savedInstanceState.getString("cur1")
+        cur2 = savedInstanceState.getString("cur2")
+        num1 = savedInstanceState.getString("num1")
+        num2 = savedInstanceState.getString("num2")
 
         setParameters()
 
-    }*/
+    }
 
 
     private fun onDoneClickListener() {
