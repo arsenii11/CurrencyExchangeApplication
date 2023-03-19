@@ -73,8 +73,8 @@ class MainActivity : AppCompatActivity() {
 
         savedInstanceState.putString("cur1", cur1)
         savedInstanceState.putString("cur2", cur2)
-        savedInstanceState.putString("num1", num1)
-        savedInstanceState.putString("num2", num2)
+        savedInstanceState.putString("num1", binding.row1.editTextNumber.text.toString())
+        savedInstanceState.putString("num2", binding.row2.editTextNumber.text.toString())
 
 
     }
