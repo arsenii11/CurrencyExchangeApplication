@@ -4,9 +4,9 @@ package com.example.currencyExchangeApplication.data.model
 
 data class ApiResponse(
     val amount: String,
-    val base_currency_code: String,
-    val base_currency_name: String,
-    var rates: HashMap<String, Rates> = HashMap(),
+    val baseCurrencyCode: String,
+    val baseCurrencyName: String,
+    var rates: Map<String, Rates>,
     val status: String,
-    val updated_date: String
+    val updatedDate: String
 )
