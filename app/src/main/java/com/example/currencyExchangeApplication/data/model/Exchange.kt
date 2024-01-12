@@ -5,7 +5,7 @@ data class Exchange(
     val amount: String,
     val baseCurrencyCode: String,
     val baseCurrencyName: String,
-    val rates:  HashMap<String, Rates> = HashMap(),
+    val rates:  Map<String, Rates>,
     val status: String,
     val updatedDate: String
 )

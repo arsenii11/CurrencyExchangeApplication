@@ -1,12 +1,12 @@
 package com.example.currencyExchangeApplication.data.api
 
-import com.example.currencyExchangeApplication.Utilities.JsonSerialization
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import com.example.currencyExchangeApplication.data.model.Currencies
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 
 
 interface CurrencyApiConfig {
@@ -21,9 +21,9 @@ interface CurrencyApiConfig {
 
     @GET(Links.CONVERT_URL)
     suspend fun convertCurrencies(
-        @Header("api_key") accessKey: String = Links.API_KEY,
-        @Header("from") from: String,
-        @Header("to") to: String,
-        @Header("amount") amount: Double
+        @Query("api_key") accessKey: String = Links.API_KEY,
+        @Query("from") from: String,
+        @Query("to") to: String,
+        @Query("amount") amount: Double
     ) : Response<ApiResponse>
 }

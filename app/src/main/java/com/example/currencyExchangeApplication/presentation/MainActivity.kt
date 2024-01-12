@@ -68,12 +68,7 @@ class MainActivity : AppCompatActivity() {
         swapButton.setOnClickListener {
             Swap()
         }
-
         progress = binding.progressBar
-
-
-
-
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -146,17 +141,18 @@ class MainActivity : AppCompatActivity() {
         //do the conversion
         viewModel.getExchangeData(apiKey, from, to, amount)
         viewModel.myResponse.observe(this, androidx.lifecycle.Observer { response ->
-            if(response.isSuccessful){
-                val map: Map<String, Rates>
-
-                map = response.body()!!.rates
-                map.keys.forEach {
-
-                    val convertedValue = map[it]?.rateForAmount
+            if (response.isSuccessful) {
+                val ratesMap: Map<String, Rates> = response.body()!!.rates
+                val amount = amount
+                // Check if the map is not empty
+                if (ratesMap.isNotEmpty()) {
+                    // Assuming there is only one entry, get the first (and only) entry
+                    val entry = ratesMap.entries.last()
+                    // Access the key and value directly
+                    val convertedValue = entry.value.rate.toDouble() * amount
                     viewModel.convertedRate.value = convertedValue
-
-                    //Formatting output
-                    Locale.setDefault(Locale.ROOT);
+                    // Formatting output
+                    Locale.setDefault(Locale.ROOT)
                     val finalString = String.format("%,.2f", viewModel.convertedRate.value)
 
                     binding.row2.editTextNumber.setText(finalString)
