@@ -5,26 +5,26 @@ import android.app.Dialog
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
-import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.ui.AppBarConfiguration
 import android.view.View
 import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ProgressBar
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import com.example.currencyExchangeApplication.Utilities.MyReceiver
-import com.example.currencyExchangeApplication.R
+import androidx.navigation.ui.AppBarConfiguration
+import com.example.conferoapplication.R
+import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.Utilities.Links
+import com.example.currencyExchangeApplication.Utilities.MyReceiver
 import com.example.currencyExchangeApplication.Utilities.Resource
 import com.example.currencyExchangeApplication.Utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
-import com.example.currencyExchangeApplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.presentation.vm.ExchangeVM
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.*
@@ -102,12 +102,12 @@ class MainActivity : AppCompatActivity() {
             val numberToConvert = binding.row1.editTextNumber.text.toString()
 
             if (numberToConvert.isEmpty() || numberToConvert == "0") {
-                showSnackbar("Empty input")
+                showSnackBar("Empty input")
             }
 
             //check if internet is available
             else if (!Utility.isNetworkAvailable(this)) {
-                showSnackbar("Internet unavailable")
+                showSnackBar("Internet unavailable")
             }
 
             //convert the value
@@ -132,8 +132,6 @@ class MainActivity : AppCompatActivity() {
             dialog.dismiss()
         }
     }
-
-
     private fun View.delayOnLifecycle(
         durationInMillis: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.Main,
@@ -145,9 +143,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     @SuppressLint("UseRequireInsteadOfGet")
-    private fun showSnackbar(text: String) {
+    private fun showSnackBar(text: String) {
         Snackbar.make(binding.ExchangeLayout, text, Snackbar.LENGTH_LONG)
             .setTextColor(ContextCompat.getColor(this, R.color.white))
             .background(ContextCompat.getColor(this, R.color.red))
@@ -188,7 +185,25 @@ class MainActivity : AppCompatActivity() {
 
     private fun initSpinner() {
         //test array
-        val currenc = arrayOf("EUR", "USD", "RUB", "SEK", "ANG", "BYN", "COP", "PLN", "UAH","YER","VND","PHP","ISK","KHR","BRL","IDR", "SOS")
+        val currenc = arrayOf(
+            "EUR",
+            "USD",
+            "RUB",
+            "SEK",
+            "ANG",
+            "BYN",
+            "COP",
+            "PLN",
+            "UAH",
+            "YER",
+            "VND",
+            "PHP",
+            "ISK",
+            "KHR",
+            "BRL",
+            "IDR",
+            "SOS"
+        )
 
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
@@ -293,13 +308,14 @@ class MainActivity : AppCompatActivity() {
                     } else if (result.data?.status == "fail") {
 
                         progress.visibility = View.GONE
-                        showSnackbar("ERROR")
+                        showSnackBar("ERROR")
 
                     }
                 }
+
                 Resource.Status.ERROR -> {
                     progress.visibility = View.GONE
-                    showSnackbar("ERROR")
+                    showSnackBar("ERROR")
                 }
 
 
@@ -310,10 +326,6 @@ class MainActivity : AppCompatActivity() {
         })
 
     }
-
-
-
-
 
 
 }

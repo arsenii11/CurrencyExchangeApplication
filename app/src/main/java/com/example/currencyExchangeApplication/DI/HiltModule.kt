@@ -1,6 +1,6 @@
 package com.example.currencyExchangeApplication.DI
 
-import com.example.currencyExchangeApplication.BuildConfig
+import com.example.conferoapplication.BuildConfig
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.data.repo.ExchangeDataSource
 import com.example.currencyExchangeApplication.data.api.ExchangeService

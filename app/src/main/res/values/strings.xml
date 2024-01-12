@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ConferoApplication</string>
+    <string name="app_name">Currency Exchange</string>
     <string name="action_settings">Settings</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">Select currency</string>
