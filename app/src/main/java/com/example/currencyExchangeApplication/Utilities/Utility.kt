@@ -19,7 +19,7 @@ object Utility {
         if (view == null) {
             view = View(activity)
         }
-        input.hideSoftInputFromWindow(view.getWindowToken(), 0)
+        input.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 

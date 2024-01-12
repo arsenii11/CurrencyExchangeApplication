@@ -13,31 +13,39 @@ import android.widget.ProgressBar
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.navigation.ui.AppBarConfiguration
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
+import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.Utilities.MyReceiver
 import com.example.currencyExchangeApplication.Utilities.Resource
 import com.example.currencyExchangeApplication.Utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
-import com.example.currencyExchangeApplication.presentation.vm.ExchangeVM
+import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
+import com.example.currencyExchangeApplication.presentation.vm.MainViewModelFactory
 import com.google.android.material.snackbar.Snackbar
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.*
+import javax.inject.Inject
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
+    @Inject
+    lateinit var viewModelFactory: MainViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this,  viewModelFactory)[MainViewModel::class.java ]
+    }
+    private val component = DaggerApplicationComponent.create()
 
     private val receiver = MyReceiver()
-    private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
 
-    private val vm: ExchangeVM by viewModels()
+
     private var cur1: String? = null
     private var cur2: String? = null
     private var num1: String? = null
@@ -46,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        component.inject(this)
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -54,42 +63,35 @@ class MainActivity : AppCompatActivity() {
         registerReceiver(receiver, intentFilter)
 
         initSpinner()
-
-
         onDoneClickListener()
-
-        val SwapBt = binding.swapButton
-        SwapBt.setOnClickListener {
+        val swapButton = binding.swapButton
+        swapButton.setOnClickListener {
             Swap()
         }
 
         progress = binding.progressBar
 
 
+
+
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-
         savedInstanceState.putString("cur1", cur1)
         savedInstanceState.putString("cur2", cur2)
         savedInstanceState.putString("num1", binding.row1.editTextNumber.text.toString())
         savedInstanceState.putString("num2", binding.row2.editTextNumber.text.toString())
-
-
     }
 
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.let { super.onRestoreInstanceState(it) }
-
         cur1 = savedInstanceState.getString("cur1")
         cur2 = savedInstanceState.getString("cur2")
         num1 = savedInstanceState.getString("num1")
         num2 = savedInstanceState.getString("num2")
-
         setParameters()
-
     }
 
 
@@ -97,23 +99,16 @@ class MainActivity : AppCompatActivity() {
         binding.buttonDone.setOnClickListener {
 
             this.let { Utility.hideKeyboard(it) }
-
-
             val numberToConvert = binding.row1.editTextNumber.text.toString()
-
             if (numberToConvert.isEmpty() || numberToConvert == "0") {
                 showSnackBar("Empty input")
             }
-
             //check if internet is available
             else if (!Utility.isNetworkAvailable(this)) {
                 showSnackBar("Internet unavailable")
             }
-
             //convert the value
-
             else {
-                showSuccessDialog(window.decorView.rootView)
                 doConversion()
             }
         }
@@ -126,12 +121,11 @@ class MainActivity : AppCompatActivity() {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.dialog_layout)
         dialog.show()
-
-
         view.delayOnLifecycle(1000L) {
             dialog.dismiss()
         }
     }
+
     private fun View.delayOnLifecycle(
         durationInMillis: Long,
         dispatcher: CoroutineDispatcher = Dispatchers.Main,
@@ -143,20 +137,49 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun doConversion() {
+        progress.visibility = View.VISIBLE
+        val apiKey = Links.API_KEY
+        val from = cur1.toString()
+        val to = cur2.toString()
+        val amount = binding.row1.editTextNumber.text.toString().toDouble()
+        //do the conversion
+        viewModel.getExchangeData(apiKey, from, to, amount)
+        viewModel.myResponse.observe(this, androidx.lifecycle.Observer { response ->
+            if(response.isSuccessful){
+                val map: Map<String, Rates>
+
+                map = response.body()!!.rates
+                map.keys.forEach {
+
+                    val convertedValue = map[it]?.rateForAmount
+                    viewModel.convertedRate.value = convertedValue
+
+                    //Formatting output
+                    Locale.setDefault(Locale.ROOT);
+                    val finalString = String.format("%,.2f", viewModel.convertedRate.value)
+
+                    binding.row2.editTextNumber.setText(finalString)
+                }
+                progress.visibility = View.GONE
+            }
+            else {
+                showSnackBar("REQUEST ERROR")
+            }
+        })
+    }
+
     @SuppressLint("UseRequireInsteadOfGet")
-    private fun showSnackBar(text: String) {
+    fun showSnackBar(text: String) {
         Snackbar.make(binding.ExchangeLayout, text, Snackbar.LENGTH_LONG)
             .setTextColor(ContextCompat.getColor(this, R.color.white))
-            .background(ContextCompat.getColor(this, R.color.red))
-            .show()
+            .background(ContextCompat.getColor(this, R.color.red)).show()
     }
 
 
     private fun setParameters() {
-
         binding.row1.textCurrency.text = cur1
         binding.row2.textCurrency.text = cur2
-
         if (num1 != null) binding.row1.editTextNumber.setText(num1.toString())
         if (num2 != null) binding.row2.editTextNumber.setText(num2.toString())
     }
@@ -165,27 +188,16 @@ class MainActivity : AppCompatActivity() {
         cur1 = cur2.also {
             cur2 = cur1
         }
-
-
         num1 = binding.row1.editTextNumber.text.toString()
         num2 = binding.row2.editTextNumber.text.toString()
-
-
-
         num1 = num2.also {
             num2 = num1
         }
-
-
         setParameters()
-
-
     }
-
-
     private fun initSpinner() {
         //test array
-        val currenc = arrayOf(
+        val currency = arrayOf(
             "EUR",
             "USD",
             "RUB",
@@ -208,9 +220,7 @@ class MainActivity : AppCompatActivity() {
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
         val arrayAdapter = ArrayAdapter<String>(
-            this,
-            android.R.layout.simple_spinner_dropdown_item,
-            currenc
+            this, android.R.layout.simple_spinner_dropdown_item, currency
         )
 
 
@@ -219,14 +229,11 @@ class MainActivity : AppCompatActivity() {
 
         spinner_1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 val cur_text_1 = binding.row1.textCurrency
-                cur_text_1.text = currenc[position]
-                cur1 = currenc[position]
+                cur_text_1.text = currency[position]
+                cur1 = currency[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -237,15 +244,12 @@ class MainActivity : AppCompatActivity() {
 
         spinner_2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
+                parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
 
                 val cur_text_2 = binding.row2.textCurrency
-                cur_text_2.text = currenc[position]
-                cur2 = currenc[position]
+                cur_text_2.text = currency[position]
+                cur2 = currency[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -261,71 +265,4 @@ class MainActivity : AppCompatActivity() {
         this.view.setBackgroundColor(color)
         return this
     }
-
-
-    private fun doConversion() {
-
-        progress.visibility = View.VISIBLE
-
-
-        val apiKey = Links.API_KEY
-        val from = cur1.toString()
-        val to = cur2.toString()
-        val amount = binding.row1.editTextNumber.text.toString().toDouble()
-
-        //do the conversion
-        vm.getConvertedData(apiKey, from, to, amount)
-
-        //observe for changes in UI
-        observeUi()
     }
-
-    @SuppressLint("SetTextI18n", "UseRequireInsteadOfGet")
-    private fun observeUi() {
-
-
-        vm.data.observe(this, androidx.lifecycle.Observer { result ->
-
-            when (result.status) {
-                Resource.Status.SUCCESS -> {
-                    if (result.data?.status == "success") {
-
-                        val map: Map<String, Rates>
-
-                        map = result.data.rates
-                        map.keys.forEach {
-
-                            val convertedValue = map[it]?.rate_for_amount
-                            vm.convertedRate.value = convertedValue
-
-                            //Formatting output
-                            Locale.setDefault(Locale.ROOT);
-                            val finalString = String.format("%,.2f", vm.convertedRate.value)
-
-                            binding.row2.editTextNumber.setText(finalString)
-                        }
-                        progress.visibility = View.GONE
-                    } else if (result.data?.status == "fail") {
-
-                        progress.visibility = View.GONE
-                        showSnackBar("ERROR")
-
-                    }
-                }
-
-                Resource.Status.ERROR -> {
-                    progress.visibility = View.GONE
-                    showSnackBar("ERROR")
-                }
-
-
-                Resource.Status.LOADING -> {
-                    progress.visibility = View.GONE
-                }
-            }
-        })
-
-    }
-
-
-}
