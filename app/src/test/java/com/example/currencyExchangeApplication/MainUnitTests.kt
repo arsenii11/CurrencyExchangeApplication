@@ -5,13 +5,18 @@ import androidx.lifecycle.Observer
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import com.example.currencyExchangeApplication.domain.DataUseCase
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
+import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
 import org.junit.Rule
+import org.junit.runner.RunWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.junit.MockitoJUnitRunner
 import retrofit2.Response
 
+
+@RunWith(MockitoJUnitRunner::class)
 class MainUnitTest {
 
     @get:Rule
@@ -19,6 +24,7 @@ class MainUnitTest {
 
     @Mock
     private lateinit var mockedRepository: DataUseCase
+    private lateinit var testScheduler: TestScheduler
 
     @Mock
     private lateinit var mockedApiResponseObserver: Observer<Response<ApiResponse>>
@@ -29,9 +35,7 @@ class MainUnitTest {
 
     @Before
     fun setup() {
-        MockitoAnnotations.openMocks(this)
-        mainViewModel = MainViewModel(mockedRepository)
-        mainViewModel.myResponse.observeForever(mockedApiResponseObserver)
+        testScheduler = TestScheduler()
     }
 
 
