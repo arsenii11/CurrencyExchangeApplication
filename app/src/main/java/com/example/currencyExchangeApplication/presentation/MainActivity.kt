@@ -152,7 +152,7 @@ class MainActivity : AppCompatActivity() {
                     viewModel.convertedRate.value = convertedValue
                     // Formatting output
                     Locale.setDefault(Locale.ROOT)
-                    val finalString = String.format("%,.2f", viewModel.convertedRate.value)
+                    val finalString = String.format("%.2f", viewModel.convertedRate.value)
 
                     binding.row2.editTextNumber.setText(finalString)
                 }
@@ -178,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         num1 = binding.row1.editTextNumber.text.toString()
         num2 = binding.row2.editTextNumber.text.toString()
         num1 = num2.also {
-            num2 = ""
+            num2 = num1
         }
         // Update UI with swapped values
         setParameters()
