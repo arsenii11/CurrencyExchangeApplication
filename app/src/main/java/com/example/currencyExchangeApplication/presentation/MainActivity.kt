@@ -1,6 +1,5 @@
 package com.example.currencyExchangeApplication.presentation
 
-import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Intent
 import android.content.IntentFilter
@@ -10,26 +9,21 @@ import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ProgressBar
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.navigation.ui.AppBarConfiguration
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
 import com.example.currencyExchangeApplication.Utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.Utilities.MyReceiver
-import com.example.currencyExchangeApplication.Utilities.Resource
 import com.example.currencyExchangeApplication.Utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
 import com.example.currencyExchangeApplication.presentation.components.SnackBar.Companion.showSnackBar
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModelFactory
-import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
 import java.util.*
 import javax.inject.Inject
@@ -40,7 +34,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var viewModelFactory: MainViewModelFactory
 
     private val viewModel by lazy {
-        ViewModelProvider(this,  viewModelFactory)[MainViewModel::class.java ]
+        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
     }
     private val component = DaggerApplicationComponent.create()
 
@@ -103,7 +97,11 @@ class MainActivity : AppCompatActivity() {
                     showSnackBar("Empty input", view = binding.ExchangeLayout, context = this)
 
                 !Utility.isNetworkAvailable(this) ->
-                    showSnackBar("Internet unavailable", view = binding.ExchangeLayout, context = this)
+                    showSnackBar(
+                        "Internet unavailable",
+                        view = binding.ExchangeLayout,
+                        context = this
+                    )
 
                 else -> doConversion()
             }
@@ -159,14 +157,11 @@ class MainActivity : AppCompatActivity() {
                     binding.row2.editTextNumber.setText(finalString)
                 }
                 progress.visibility = View.GONE
-            }
-            else {
-                showSnackBar("REQUEST ERROR", view = binding.ExchangeLayout, context = this )
+            } else {
+                showSnackBar("REQUEST ERROR", view = binding.ExchangeLayout, context = this)
             }
         })
     }
-
-
 
 
     private fun setParameters() {
@@ -183,7 +178,7 @@ class MainActivity : AppCompatActivity() {
         num1 = binding.row1.editTextNumber.text.toString()
         num2 = binding.row2.editTextNumber.text.toString()
         num1 = num2.also {
-            num2 = num1
+            num2 = ""
         }
         // Update UI with swapped values
         setParameters()
@@ -194,17 +189,17 @@ class MainActivity : AppCompatActivity() {
         val currencies = CurrenciesAvailable.currenciesList()
 
         //test array
-        val spinner_1 = binding.row1.currenciesSpinner
-        val spinner_2 = binding.row2.currenciesSpinner
+        val spinner1 = binding.row1.currenciesSpinner
+        val spinner2 = binding.row2.currenciesSpinner
         val arrayAdapter = ArrayAdapter<String>(
             this, android.R.layout.simple_spinner_dropdown_item, currencies
         )
 
 
-        spinner_1.adapter = arrayAdapter
-        spinner_2.adapter = arrayAdapter
+        spinner1.adapter = arrayAdapter
+        spinner2.adapter = arrayAdapter
 
-        spinner_1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinner1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
@@ -219,7 +214,7 @@ class MainActivity : AppCompatActivity() {
 
         }
 
-        spinner_2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+        spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
@@ -239,4 +234,4 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    }
+}

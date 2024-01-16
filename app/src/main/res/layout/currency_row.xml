@@ -5,42 +5,50 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="194dp"
-        android:layout_height="55dp"
+        android:layout_height="60dp"
         android:orientation="vertical"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textCurrency"
-            android:freezesText="true"
-            android:layout_width="121dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10pt"
+            android:freezesText="true"
             android:text="Euro"
-            android:textSize="10pt" />
+            android:textSize="22sp"
+            android:textColor="#333333"
+            android:fontFamily="sans-serif"
+            android:padding="8dp"
+            android:layout_marginStart="20dp"
+            android:gravity="end"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/currencies_spinner"
-            android:layout_width="60dp"
+            android:layout_width="40dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
             android:spinnerMode="dropdown"
-
-            android:layout_gravity="end" />
-    </LinearLayout>
+            app:layout_constraintBottom_toBottomOf="@+id/textCurrency"
+            app:layout_constraintStart_toEndOf="@+id/textCurrency"
+            app:layout_constraintTop_toTopOf="@+id/textCurrency" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <EditText
         android:id="@+id/editTextNumber"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:ems="5"
         android:inputType="numberDecimal"
-        android:minHeight="48dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toEndOf="@+id/linearLayout"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="SpeakableTextPresentCheck" />
 
 
