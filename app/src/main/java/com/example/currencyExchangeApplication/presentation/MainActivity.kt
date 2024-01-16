@@ -25,6 +25,7 @@ import com.example.currencyExchangeApplication.Utilities.MyReceiver
 import com.example.currencyExchangeApplication.Utilities.Resource
 import com.example.currencyExchangeApplication.Utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
+import com.example.currencyExchangeApplication.presentation.components.SnackBar.Companion.showSnackBar
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModelFactory
 import com.google.android.material.snackbar.Snackbar
@@ -96,11 +97,11 @@ class MainActivity : AppCompatActivity() {
             this.let { Utility.hideKeyboard(it) }
             val numberToConvert = binding.row1.editTextNumber.text.toString()
             if (numberToConvert.isEmpty() || numberToConvert == "0") {
-                showSnackBar("Empty input")
+                showSnackBar("Empty input", view = binding.ExchangeLayout, context = this )
             }
             //check if internet is available
             else if (!Utility.isNetworkAvailable(this)) {
-                showSnackBar("Internet unavailable")
+                showSnackBar("Internet unavailable", view = binding.ExchangeLayout, context = this )
             }
             //convert the value
             else {
@@ -160,17 +161,12 @@ class MainActivity : AppCompatActivity() {
                 progress.visibility = View.GONE
             }
             else {
-                showSnackBar("REQUEST ERROR")
+                showSnackBar("REQUEST ERROR", view = binding.ExchangeLayout, context = this )
             }
         })
     }
 
-    @SuppressLint("UseRequireInsteadOfGet")
-    fun showSnackBar(text: String) {
-        Snackbar.make(binding.ExchangeLayout, text, Snackbar.LENGTH_LONG)
-            .setTextColor(ContextCompat.getColor(this, R.color.white))
-            .background(ContextCompat.getColor(this, R.color.red)).show()
-    }
+
 
 
     private fun setParameters() {
@@ -257,8 +253,5 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun Snackbar.background(color: Int): Snackbar {
-        this.view.setBackgroundColor(color)
-        return this
-    }
+
     }
