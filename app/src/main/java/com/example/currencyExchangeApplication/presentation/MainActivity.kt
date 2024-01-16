@@ -67,7 +67,7 @@ class MainActivity : AppCompatActivity() {
         onDoneClickListener()
         val swapButton = binding.swapButton
         swapButton.setOnClickListener {
-            Swap()
+            swap()
         }
         progress = binding.progressBar
     }
@@ -96,16 +96,15 @@ class MainActivity : AppCompatActivity() {
 
             this.let { Utility.hideKeyboard(it) }
             val numberToConvert = binding.row1.editTextNumber.text.toString()
-            if (numberToConvert.isEmpty() || numberToConvert == "0") {
-                showSnackBar("Empty input", view = binding.ExchangeLayout, context = this )
-            }
-            //check if internet is available
-            else if (!Utility.isNetworkAvailable(this)) {
-                showSnackBar("Internet unavailable", view = binding.ExchangeLayout, context = this )
-            }
-            //convert the value
-            else {
-                doConversion()
+
+            when {
+                numberToConvert.isNullOrBlank() || numberToConvert == "0" ->
+                    showSnackBar("Empty input", view = binding.ExchangeLayout, context = this)
+
+                !Utility.isNetworkAvailable(this) ->
+                    showSnackBar("Internet unavailable", view = binding.ExchangeLayout, context = this)
+
+                else -> doConversion()
             }
         }
     }
@@ -176,7 +175,7 @@ class MainActivity : AppCompatActivity() {
         if (num2 != null) binding.row2.editTextNumber.setText(num2.toString())
     }
 
-    private fun Swap() {
+    private fun swap() {
         cur1 = cur2.also {
             cur2 = cur1
         }
@@ -185,8 +184,10 @@ class MainActivity : AppCompatActivity() {
         num1 = num2.also {
             num2 = num1
         }
+        // Update UI with swapped values
         setParameters()
     }
+
     private fun initSpinner() {
         //test array
         val currency = arrayOf(
