@@ -20,6 +20,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
+import com.example.currencyExchangeApplication.Utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.Utilities.MyReceiver
 import com.example.currencyExchangeApplication.Utilities.Resource
@@ -189,31 +190,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initSpinner() {
-        //test array
-        val currency = arrayOf(
-            "EUR",
-            "USD",
-            "RUB",
-            "SEK",
-            "ANG",
-            "BYN",
-            "COP",
-            "PLN",
-            "UAH",
-            "YER",
-            "VND",
-            "PHP",
-            "ISK",
-            "KHR",
-            "BRL",
-            "IDR",
-            "SOS"
-        )
 
+        val currencies = CurrenciesAvailable.currenciesList()
+
+        //test array
         val spinner_1 = binding.row1.currenciesSpinner
         val spinner_2 = binding.row2.currenciesSpinner
         val arrayAdapter = ArrayAdapter<String>(
-            this, android.R.layout.simple_spinner_dropdown_item, currency
+            this, android.R.layout.simple_spinner_dropdown_item, currencies
         )
 
 
@@ -225,8 +209,8 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
                 val cur_text_1 = binding.row1.textCurrency
-                cur_text_1.text = currency[position]
-                cur1 = currency[position]
+                cur_text_1.text = currencies[position]
+                cur1 = currencies[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -241,8 +225,8 @@ class MainActivity : AppCompatActivity() {
             ) {
 
                 val cur_text_2 = binding.row2.textCurrency
-                cur_text_2.text = currency[position]
-                cur2 = currency[position]
+                cur_text_2.text = currencies[position]
+                cur2 = currencies[position]
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
