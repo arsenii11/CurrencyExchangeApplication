@@ -1,6 +1,7 @@
 package com.example.currencyExchangeApplication.domain
 
 import com.example.currencyExchangeApplication.data.model.ApiResponse
+import com.example.currencyExchangeApplication.data.repository.CurrencyRepository
 import retrofit2.Response
 import javax.inject.Inject
 

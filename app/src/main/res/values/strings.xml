@@ -5,7 +5,7 @@
     <string name="first_fragment_label">Select currency</string>
     <string name="second_fragment_label">Second Fragment</string>
     <string name="next">Exchange</string>
-    <string name="Done">Done</string>
+    <string name="Done">Convert</string>
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>

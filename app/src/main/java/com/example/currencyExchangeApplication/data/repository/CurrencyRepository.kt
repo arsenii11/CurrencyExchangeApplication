@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.domain
+package com.example.currencyExchangeApplication.data.repository
 
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import retrofit2.Response
