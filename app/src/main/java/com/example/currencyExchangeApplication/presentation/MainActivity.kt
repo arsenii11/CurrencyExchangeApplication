@@ -33,14 +33,14 @@ class MainActivity : AppCompatActivity() {
     @Inject
     lateinit var viewModelFactory: MainViewModelFactory
 
-    private val viewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
+    private val viewModel: MainViewModel by lazy {
+        ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
     }
+
     private val component = DaggerApplicationComponent.create()
 
     private val receiver = MyReceiver()
     private lateinit var binding: ActivityMainBinding
-
 
     private var cur1: String? = null
     private var cur2: String? = null
