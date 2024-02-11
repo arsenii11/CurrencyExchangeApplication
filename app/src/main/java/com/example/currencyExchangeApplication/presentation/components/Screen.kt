@@ -11,9 +11,7 @@ import androidx.compose.ui.tooling.preview.Preview
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-private fun Screen(
-
-) {
+private fun Screen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {

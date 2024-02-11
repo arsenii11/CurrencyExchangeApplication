@@ -97,4 +97,10 @@ dependencies {
 
     // Add this dependency for LiveData testing
     testImplementation 'androidx.arch.core:core-testing:2.1.0'
+
+    //Room
+    implementation "androidx.room:room-runtime:2.4.0"
+    implementation "androidx.room:room-ktx:2.4.0"
+    kapt "androidx.room:room-compiler:2.4.0"
+
 }
