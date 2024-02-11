@@ -16,7 +16,7 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
-import com.example.currencyExchangeApplication.Utilities.CurrenciesAvailable
+import com.example.currencyExchangeApplication.utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.Utilities.Links
 import com.example.currencyExchangeApplication.Utilities.MyReceiver
 import com.example.currencyExchangeApplication.Utilities.Utility
