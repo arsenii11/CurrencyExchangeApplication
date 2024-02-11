@@ -1,6 +1,6 @@
 package com.example.currencyExchangeApplication.data.api
 
-import com.example.currencyExchangeApplication.Utilities.Links
+import com.example.currencyExchangeApplication.utilities.Links
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import com.example.currencyExchangeApplication.data.model.Currencies
 import retrofit2.Response

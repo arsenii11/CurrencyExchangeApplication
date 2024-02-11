@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.Utilities
+package com.example.currencyExchangeApplication.utilities
 
 import android.app.Activity
 import android.content.Context

@@ -1,6 +1,6 @@
 package com.example.currencyExchangeApplication.data.api
 
-import com.example.currencyExchangeApplication.Utilities.Links
+import com.example.currencyExchangeApplication.utilities.Links
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

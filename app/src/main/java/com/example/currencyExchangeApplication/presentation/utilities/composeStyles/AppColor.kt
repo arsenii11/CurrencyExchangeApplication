@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.Utilities.composeStyles
+package com.example.currencyExchangeApplication.presentation.utilities.composeStyles
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable

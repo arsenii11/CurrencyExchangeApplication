@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.Utilities
+package com.example.currencyExchangeApplication.presentation.utilities
 
 /**
  * Some of network request migrated to kotlinx.Serialization.

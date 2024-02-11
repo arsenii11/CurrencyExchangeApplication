@@ -16,10 +16,10 @@ import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
-import com.example.currencyExchangeApplication.Utilities.CurrenciesAvailable
-import com.example.currencyExchangeApplication.Utilities.Links
-import com.example.currencyExchangeApplication.Utilities.MyReceiver
-import com.example.currencyExchangeApplication.Utilities.Utility
+import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
+import com.example.currencyExchangeApplication.utilities.Links
+import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
+import com.example.currencyExchangeApplication.presentation.utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
 import com.example.currencyExchangeApplication.presentation.components.SnackBar.Companion.showSnackBar
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel

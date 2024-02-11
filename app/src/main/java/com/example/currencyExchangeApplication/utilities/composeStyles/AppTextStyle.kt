@@ -1,10 +1,11 @@
-package com.example.currencyExchangeApplication.Utilities.composeStyles
+package com.example.currencyExchangeApplication.utilities.composeStyles
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
+import com.example.currencyExchangeApplication.presentation.utilities.composeStyles.AppColor
 
 object AppTextStyle {
     val largeTitle: TextStyle
