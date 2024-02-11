@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun doConversion() {
+    private fun doConversion() {
         progress.visibility = View.VISIBLE
         val apiKey = Links.API_KEY
         val from = cur1.toString()
@@ -203,15 +203,12 @@ class MainActivity : AppCompatActivity() {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
-                val cur_text_1 = binding.row1.textCurrency
-                cur_text_1.text = currencies[position]
+                val curText1 = binding.row1.textCurrency
+                curText1.text = currencies[position]
                 cur1 = currencies[position]
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
             }
-
         }
 
         spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -219,19 +216,12 @@ class MainActivity : AppCompatActivity() {
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
 
-                val cur_text_2 = binding.row2.textCurrency
-                cur_text_2.text = currencies[position]
+                val curText2 = binding.row2.textCurrency
+                curText2.text = currencies[position]
                 cur2 = currencies[position]
             }
-
             override fun onNothingSelected(parent: AdapterView<*>?) {
-
             }
-
         }
-
-
     }
-
-
 }
