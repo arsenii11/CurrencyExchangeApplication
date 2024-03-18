@@ -9,6 +9,6 @@ data class ConversionHistoryEntity(
     val id: Long = 0,
     val fromCurrency: String,
     val toCurrency: String,
-    val amount: Double,
-    val convertedValue: Double
+    val amount: String,
+    val convertedValue: String
 )

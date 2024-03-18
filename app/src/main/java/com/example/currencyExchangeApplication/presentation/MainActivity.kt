@@ -13,11 +13,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
-import androidx.room.Room
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
 import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
-import com.example.currencyExchangeApplication.data.database.AppDatabase
 import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.utilities.Links
 import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
@@ -38,6 +36,8 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by lazy {
         ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
     }
+
+
 
     private val component = DaggerApplicationComponent.create()
 
@@ -71,11 +71,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
-        val db = Room.databaseBuilder(
-            applicationContext,
-            AppDatabase::class.java, "conversion_history_database"
-        ).build()
+      viewModel.createDataBase(applicationContext)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -114,7 +110,9 @@ class MainActivity : AppCompatActivity() {
                         context = this
                     )
 
-                else -> doConversion()
+                else -> runBlocking {
+                    launch { doConversion() }
+                }
             }
         }
     }
@@ -142,7 +140,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun doConversion() {
+    private suspend fun doConversion() {
         progress.visibility = View.VISIBLE
         val apiKey = Links.API_KEY
         val from = cur1.toString()
@@ -150,7 +148,7 @@ class MainActivity : AppCompatActivity() {
         val amount = binding.row1.editTextNumber.text.toString().toDouble()
         //do the conversion
         viewModel.getExchangeData(apiKey, from, to, amount)
-        viewModel.myResponse.observe(this, androidx.lifecycle.Observer { response ->
+        viewModel.myResponse.observe(this) { response ->
             if (response.isSuccessful) {
                 val ratesMap: Map<String, Rates> = response.body()!!.rates
                 val amount = amount
@@ -166,14 +164,17 @@ class MainActivity : AppCompatActivity() {
                     val finalString = String.format("%.2f", viewModel.convertedRate.value)
 
                     binding.row2.editTextNumber.setText(finalString)
+
+
+                        viewModel.performConversionAndSave(from = from, to = to , amount = amount.toString() , convertedValue = finalString)
+
                 }
                 progress.visibility = View.GONE
             } else {
                 showSnackBar("REQUEST ERROR", view = binding.ExchangeLayout, context = this)
             }
-        })
+        }
     }
-
 
     private fun setParameters() {
         binding.row1.textCurrency.text = cur1
