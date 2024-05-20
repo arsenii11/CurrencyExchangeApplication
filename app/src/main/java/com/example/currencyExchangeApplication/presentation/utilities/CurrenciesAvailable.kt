@@ -1,7 +1,7 @@
 package com.example.currencyExchangeApplication.presentation.utilities
 
 object CurrenciesAvailable {
-    fun currenciesList(): Array<String> = arrayOf(
+    fun currenciesList(): List<String> = listOf(
         "EUR",
         "USD",
         "RUB",
@@ -20,5 +20,4 @@ object CurrenciesAvailable {
         "IDR",
         "SOS"
     )
-
 }

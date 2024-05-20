@@ -9,4 +9,8 @@ class HistoryRepository(private val historyDao: ConversionHistoryDao) {
     suspend fun addRequest(entity: ConversionHistoryEntity) {
         historyDao.insertTransaction(entity)
     }
+
+    suspend fun deleteAll() {
+        historyDao.deleteAllTransactions()
+    }
 }

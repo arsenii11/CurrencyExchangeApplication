@@ -14,4 +14,7 @@ interface ConversionHistoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTransaction(transaction: ConversionHistoryEntity)
+
+    @Query("DELETE FROM conversion_history")
+    suspend fun deleteAllTransactions()
 }
