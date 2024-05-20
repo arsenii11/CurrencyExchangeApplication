@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.DI
+package com.example.currencyExchangeApplication.domain.di
 
 
 import com.example.currencyExchangeApplication.domain.DomainModule

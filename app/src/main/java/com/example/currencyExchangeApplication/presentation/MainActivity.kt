@@ -9,37 +9,29 @@ import android.view.Window
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ProgressBar
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.coroutineScope
 import androidx.lifecycle.findViewTreeLifecycleOwner
 import com.example.conferoapplication.R
 import com.example.conferoapplication.databinding.ActivityMainBinding
-import com.example.currencyExchangeApplication.DI.DaggerApplicationComponent
+import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.utilities.Links
 import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
 import com.example.currencyExchangeApplication.presentation.utilities.Utility
 import com.example.currencyExchangeApplication.data.model.Rates
 import com.example.currencyExchangeApplication.presentation.components.SnackBar.Companion.showSnackBar
+import com.example.currencyExchangeApplication.presentation.history.HistoryActivity
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
-import com.example.currencyExchangeApplication.presentation.vm.MainViewModelFactory
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.*
 import java.util.*
-import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    @Inject
-    lateinit var viewModelFactory: MainViewModelFactory
-
-    private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this, viewModelFactory)[MainViewModel::class.java]
-    }
-
-
-
-    private val component = DaggerApplicationComponent.create()
+    private val viewModel: MainViewModel by viewModels()
 
     private val receiver = MyReceiver()
     private lateinit var binding: ActivityMainBinding
@@ -50,10 +42,10 @@ class MainActivity : AppCompatActivity() {
     private var num2: String? = null
     private lateinit var progress: ProgressBar
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
-        component.inject(this)
         super.onCreate(savedInstanceState)
+
+        viewModel.createDataBase(applicationContext)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -62,16 +54,12 @@ class MainActivity : AppCompatActivity() {
 
         initSpinner()
         onDoneClickListener()
+        onHistoryClickListener()
         val swapButton = binding.swapButton
         swapButton.setOnClickListener {
             swap()
         }
         progress = binding.progressBar
-    }
-
-    override fun onResume() {
-        super.onResume()
-      viewModel.createDataBase(applicationContext)
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -82,7 +70,6 @@ class MainActivity : AppCompatActivity() {
         savedInstanceState.putString("num2", binding.row2.editTextNumber.text.toString())
     }
 
-
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         savedInstanceState.let { super.onRestoreInstanceState(it) }
         cur1 = savedInstanceState.getString("cur1")
@@ -92,11 +79,17 @@ class MainActivity : AppCompatActivity() {
         setParameters()
     }
 
+    private fun onHistoryClickListener() {
+        binding.buttonHistory.setOnClickListener {
+            val intent = Intent(this, HistoryActivity::class.java)
+            startActivity(intent)
+            finish()
+        }
+    }
 
     private fun onDoneClickListener() {
         binding.buttonDone.setOnClickListener {
-
-            this.let { Utility.hideKeyboard(it) }
+            Utility.hideKeyboard(this)
             val numberToConvert = binding.row1.editTextNumber.text.toString()
 
             when {
@@ -104,11 +97,7 @@ class MainActivity : AppCompatActivity() {
                     showSnackBar("Empty input", view = binding.ExchangeLayout, context = this)
 
                 !Utility.isNetworkAvailable(this) ->
-                    showSnackBar(
-                        "Internet unavailable",
-                        view = binding.ExchangeLayout,
-                        context = this
-                    )
+                    showSnackBar("Internet unavailable", view = binding.ExchangeLayout, context = this)
 
                 else -> runBlocking {
                     launch { doConversion() }
@@ -116,7 +105,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 
     private fun showSuccessDialog(view: View) {
         val dialog = Dialog(this)
@@ -140,34 +128,33 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun doConversion() {
+    private fun doConversion() {
         progress.visibility = View.VISIBLE
         val apiKey = Links.API_KEY
         val from = cur1.toString()
         val to = cur2.toString()
         val amount = binding.row1.editTextNumber.text.toString().toDouble()
-        //do the conversion
+        // do the conversion
         viewModel.getExchangeData(apiKey, from, to, amount)
         viewModel.myResponse.observe(this) { response ->
             if (response.isSuccessful) {
                 val ratesMap: Map<String, Rates> = response.body()!!.rates
-                val amount = amount
-                // Check if the map is not empty
                 if (ratesMap.isNotEmpty()) {
-                    // Assuming there is only one entry, get the first (and only) entry
                     val entry = ratesMap.entries.last()
-                    // Access the key and value directly
                     val convertedValue = entry.value.rate.toDouble() * amount
                     viewModel.convertedRate.value = convertedValue
-                    // Formatting output
-                    Locale.setDefault(Locale.ROOT)
                     val finalString = String.format("%.2f", viewModel.convertedRate.value)
 
                     binding.row2.editTextNumber.setText(finalString)
 
-
-                        viewModel.performConversionAndSave(from = from, to = to , amount = amount.toString() , convertedValue = finalString)
-
+                    viewModel.performConversionAndSave(
+                        from = from,
+                        to = to,
+                        amount = amount.toString(),
+                        convertedValue = finalString
+                    )
+                    val newEntity = ConversionHistoryEntity(0, from, to, amount.toString(), finalString)
+                    viewModel.addEntity(newEntity)
                 }
                 progress.visibility = View.GONE
             } else {
@@ -184,56 +171,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun swap() {
-        cur1 = cur2.also {
-            cur2 = cur1
-        }
+        cur1 = cur2.also { cur2 = cur1 }
         num1 = binding.row1.editTextNumber.text.toString()
         num2 = binding.row2.editTextNumber.text.toString()
-        num1 = num2.also {
-            num2 = num1
-        }
-        // Update UI with swapped values
+        num1 = num2.also { num2 = num1 }
         setParameters()
     }
 
     private fun initSpinner() {
-
         val currencies = CurrenciesAvailable.currenciesList()
 
-        //test array
         val spinner1 = binding.row1.currenciesSpinner
         val spinner2 = binding.row2.currenciesSpinner
-        val arrayAdapter = ArrayAdapter<String>(
-            this, android.R.layout.simple_spinner_dropdown_item, currencies
-        )
-
+        val arrayAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, currencies)
 
         spinner1.adapter = arrayAdapter
         spinner2.adapter = arrayAdapter
 
         spinner1.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-                val curText1 = binding.row1.textCurrency
-                curText1.text = currencies[position]
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                binding.row1.textCurrency.text = currencies[position]
                 cur1 = currencies[position]
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
 
         spinner2.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?, view: View?, position: Int, id: Long
-            ) {
-
-                val curText2 = binding.row2.textCurrency
-                curText2.text = currencies[position]
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                binding.row2.textCurrency.text = currencies[position]
                 cur2 = currencies[position]
             }
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 }

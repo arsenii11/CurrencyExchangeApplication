@@ -1,49 +1,53 @@
 package com.example.currencyExchangeApplication.presentation.vm
 
+import android.app.Application
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import androidx.room.Room
 import com.example.currencyExchangeApplication.data.database.AppDatabase
 import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity
+import com.example.currencyExchangeApplication.data.database.HistoryRepository
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import com.example.currencyExchangeApplication.domain.DataUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor (private val repository: DataUseCase): ViewModel(){
+@HiltViewModel
+class MainViewModel @Inject constructor (
+    application: Application,
+    private val repository: DataUseCase
+) : AndroidViewModel(application) {
 
     val myResponse: MutableLiveData<Response<ApiResponse>> = MutableLiveData()
 
-
-    //public
     var convertedRate = MutableLiveData<Double>()
 
     private lateinit var db: AppDatabase
+
     fun createDataBase(applicationContext: Context) {
         db = Room.databaseBuilder(
             applicationContext,
-            AppDatabase::class.java, "conversion_history_database"
+            AppDatabase::class.java, "conversion_history"
         ).build()
     }
 
-
-    fun getExchangeData(accessKey: String, from: String, to: String, amount: Double){
+    fun getExchangeData(accessKey: String, from: String, to: String, amount: Double) {
         viewModelScope.launch {
             val response: Response<ApiResponse> = repository.invoke(accessKey, from, to, amount)
-            myResponse.value= response
+            myResponse.value = response
         }
     }
-
 
     fun performConversionAndSave(from: String, to: String, amount: String, convertedValue: String) {
         viewModelScope.launch {
             saveConversionTransaction(from, to, amount, convertedValue)
         }
     }
-     suspend fun saveConversionTransaction(from: String, to: String, amount: String, convertedValue: String) {
+
+    private suspend fun saveConversionTransaction(from: String, to: String, amount: String, convertedValue: String) {
         val conversionEntity = ConversionHistoryEntity(
             fromCurrency = from,
             toCurrency = to,
@@ -51,5 +55,20 @@ class MainViewModel @Inject constructor (private val repository: DataUseCase): V
             convertedValue = convertedValue
         )
         db.conversionHistoryDao().insertTransaction(conversionEntity)
+    }
+
+    private val readAllData: LiveData<List<ConversionHistoryEntity>>
+    private val historyRepository: HistoryRepository
+
+    init {
+        val requestHistoryDao = AppDatabase.getDatabase(application).conversionHistoryDao()
+        historyRepository = HistoryRepository(requestHistoryDao)
+        readAllData = historyRepository.readAllData
+    }
+
+    fun addEntity(entity: ConversionHistoryEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            historyRepository.addRequest(entity)
+        }
     }
 }
