@@ -64,7 +64,7 @@ fun ExchangeScreen(
             onClick = onSwapClick,
             modifier = Modifier
                 .size(48.dp)
-                .background(Color.LightGray)
+                .background(Color.Transparent)
                 .padding(8.dp)
         ) {
             Icon(
