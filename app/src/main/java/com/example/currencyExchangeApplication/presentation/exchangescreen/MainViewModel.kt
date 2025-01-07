@@ -1,8 +1,11 @@
-package com.example.currencyExchangeApplication.presentation.vm
+package com.example.currencyExchangeApplication.presentation.exchangescreen
 
 import android.app.Application
 import android.content.Context
-import androidx.lifecycle.*
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.example.currencyExchangeApplication.data.database.AppDatabase
 import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity

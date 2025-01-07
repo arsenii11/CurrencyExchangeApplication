@@ -1,5 +1,6 @@
 package com.example.currencyExchangeApplication.presentation
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
@@ -7,16 +8,21 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material.SnackbarHostState
-import androidx.compose.runtime.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
 import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity
-import com.example.currencyExchangeApplication.data.model.Rates
+import com.example.currencyExchangeApplication.data.model.CurrencyState
+import com.example.currencyExchangeApplication.data.model.ExchangeScreenActions
+import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
+import com.example.currencyExchangeApplication.data.model.ExchangeState
 import com.example.currencyExchangeApplication.presentation.exchangescreen.ExchangeScreen
+import com.example.currencyExchangeApplication.presentation.exchangescreen.MainViewModel
 import com.example.currencyExchangeApplication.presentation.history.HistoryActivity
 import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
 import com.example.currencyExchangeApplication.presentation.utilities.Utility
-import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
-import com.example.currencyExchangeApplication.utilities.Links
+import com.example.currencyExchangeApplication.presentation.utilities.Links
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,135 +31,150 @@ class MainActivity : ComponentActivity() {
 
     private val viewModel: MainViewModel by viewModels()
     private val receiver = MyReceiver()
-    private var cur1 by mutableStateOf("EUR")
-    private var cur2 by mutableStateOf("USD")
-    private var num1 by mutableStateOf("")
-    private var num2 by mutableStateOf("")
-    private var isLoading by mutableStateOf(false)
     private val snackbarHostState = SnackbarHostState()
+
+    // Encapsulate state in a single data class
+    private var exchangeState by mutableStateOf(
+        ExchangeState(
+            cur1 = "EUR",
+            cur2 = "USD",
+            num1 = "",
+            num2 = "",
+            isLoading = false
+        )
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel.createDataBase(applicationContext)
-        val intentFilter = IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED)
-        registerReceiver(receiver, intentFilter)
+        registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
 
         setContent {
             ExchangeScreen(
-                cur1 = cur1,
-                cur2 = cur2,
-                num1 = num1,
-                num2 = num2,
-                onCur1Change = { cur1 = it },
-                onCur2Change = { cur2 = it },
-                onNum1Change = { num1 = it },
-                onNum2Change = { num2 = it },
-                onSwapClick = { swap() },
-                onDoneClick = { onDoneClickListener() },
-                onHistoryClick = { onHistoryClick() },
-                isLoading = isLoading,
-                snackbarHostState = snackbarHostState
+                state = ExchangeScreenState(
+                    currency1 = CurrencyState(
+                        selectedCurrency = exchangeState.cur1,
+                        amount = exchangeState.num1,
+                        onCurrencyChange = {
+                            if(it != exchangeState.cur2) {
+                                exchangeState = exchangeState.copy(cur1 = it)
+                            } else {
+                                showSnackbar("Cannot select the same currency for both fields")
+                            }
+                        },
+                        onAmountChange = { exchangeState = exchangeState.copy(num1 = it) }
+                    ),
+                    currency2 = CurrencyState(
+                        selectedCurrency = exchangeState.cur2,
+                        amount = exchangeState.num2,
+                        onCurrencyChange = {
+                            if(it != exchangeState.cur1) {
+                                exchangeState = exchangeState.copy(cur2 = it)
+                            } else {
+                                showSnackbar("Cannot select the same currency for both fields")
+                            }
+                        },
+                        onAmountChange = { exchangeState = exchangeState.copy(num2 = it) }
+                    ),
+                    isLoading = exchangeState.isLoading,
+                    snackbarHostState = snackbarHostState
+                ),
+                actions = ExchangeScreenActions(
+                    onSwapClick = { swapCurrencies() },
+                    onDoneClick = { handleDoneClick() },
+                    onHistoryClick = { navigateToHistory() }
+                )
             )
         }
     }
 
     override fun onSaveInstanceState(savedInstanceState: Bundle) {
         super.onSaveInstanceState(savedInstanceState)
-        savedInstanceState.putString("cur1", cur1)
-        savedInstanceState.putString("cur2", cur2)
-        savedInstanceState.putString("num1", num1)
-        savedInstanceState.putString("num2", num2)
+        // Предполагается, что ExchangeState реализует Parcelable
+        savedInstanceState.putParcelable("exchangeState", exchangeState)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        cur1 = savedInstanceState.getString("cur1", "EUR")
-        cur2 = savedInstanceState.getString("cur2", "USD")
-        num1 = savedInstanceState.getString("num1", "")
-        num2 = savedInstanceState.getString("num2", "")
+        exchangeState = savedInstanceState.getParcelable("exchangeState") ?: ExchangeState()
     }
 
-    private fun onHistoryClick() {
+    private fun navigateToHistory() {
         val intent = Intent(this, HistoryActivity::class.java)
         startActivity(intent)
         finish()
     }
 
-    private fun onDoneClickListener() {
+    private fun handleDoneClick() {
         Utility.hideKeyboard(this)
-        val numberToConvert = num1
-        num2 = "" // Clear the result window
+        val numberToConvert = exchangeState.num1
 
         when {
-            numberToConvert.isBlank() || numberToConvert == "0" -> {
-                showSnackbar("Empty input")
-            }
-            !Utility.isNetworkAvailable(this) -> {
-                showSnackbar("Internet unavailable")
-            }
-            else -> {
-                lifecycleScope.launch {
-                    try {
-                        doConversion()
-                    } catch (e: NumberFormatException) {
-                        showSnackbar("Invalid number format")
-                    }
-                }
-            }
+            numberToConvert.isBlank() || numberToConvert == "0" -> showSnackbar("Empty or invalid input")
+            numberToConvert.toDoubleOrNull()?.let { it <= 0 } == true -> showSnackbar("Amount must be greater than 0")
+            !Utility.isNetworkAvailable(this) -> showSnackbar("Internet unavailable")
+            else -> lifecycleScope.launch { performConversion() }
         }
     }
 
     private fun showSnackbar(message: String) {
-        lifecycleScope.launch {
-            snackbarHostState.showSnackbar(message)
-        }
+        lifecycleScope.launch { snackbarHostState.showSnackbar(message) }
     }
 
-    private suspend fun doConversion() {
-        isLoading = true
+    @SuppressLint("DefaultLocale")
+    private fun performConversion() {
+        exchangeState = exchangeState.copy(isLoading = true)
         val apiKey = Links.API_KEY
-        val from = cur1
-        val to = cur2
-        val amount = num1.toDouble()
 
-        viewModel.getExchangeData(apiKey, from, to, amount)
+        viewModel.getExchangeData(
+            accessKey = apiKey,
+            from = exchangeState.cur1,
+            to = exchangeState.cur2,
+            amount = exchangeState.num1.toDouble()
+        )
+
         viewModel.myResponse.observe(this@MainActivity) { response ->
             if (response.isSuccessful) {
-                val ratesMap: Map<String, Rates> = response.body()!!.rates
-                if (ratesMap.isNotEmpty()) {
-                    val entry = ratesMap.entries.last()
-                    val convertedValue = entry.value.rate.toDouble() * amount
-                    viewModel.convertedRate.value = convertedValue
-                    val finalString = String.format("%.2f", viewModel.convertedRate.value)
+                response.body()?.rates?.entries?.lastOrNull()?.let { entry ->
+                    val convertedValue = entry.value.rate.toDouble() * exchangeState.num1.toDouble()
+                    val formattedValue = String.format("%.2f", convertedValue)
+                    exchangeState = exchangeState.copy(num2 = formattedValue)
 
-                    num2 = finalString
-
+                    // Save conversion details
                     lifecycleScope.launch {
                         viewModel.performConversionAndSave(
-                            from = from,
-                            to = to,
-                            amount = amount.toString(),
-                            convertedValue = finalString
+                            from = exchangeState.cur1,
+                            to = exchangeState.cur2,
+                            amount = exchangeState.num1,
+                            convertedValue = formattedValue
                         )
-                        val newEntity = ConversionHistoryEntity(0, from, to, amount.toString(), finalString)
-                        viewModel.addEntity(newEntity)
+                        viewModel.addEntity(
+                            ConversionHistoryEntity(
+                                id = 0,
+                                fromCurrency = exchangeState.cur1,
+                                toCurrency = exchangeState.cur2,
+                                amount = exchangeState.num1,
+                                convertedValue = formattedValue
+                            )
+                        )
                     }
                 }
-                isLoading = false
             } else {
-                isLoading = false
                 showSnackbar("Request error")
             }
+            exchangeState = exchangeState.copy(isLoading = false)
         }
     }
 
-    private fun swap() {
-        val tempCur = cur1
-        cur1 = cur2
-        cur2 = tempCur
-
-        val tempNum = num1
-        num1 = num2
-        num2 = tempNum
+    private fun swapCurrencies() {
+        exchangeState = exchangeState.copy(
+            cur1 = exchangeState.cur2,
+            cur2 = exchangeState.cur1,
+            num1 = exchangeState.num2,
+            num2 = exchangeState.num1
+        )
     }
 }
+
+
+

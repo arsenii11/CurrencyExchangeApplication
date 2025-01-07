@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.presentation.vm
+package com.example.currencyExchangeApplication.presentation.exchangescreen
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

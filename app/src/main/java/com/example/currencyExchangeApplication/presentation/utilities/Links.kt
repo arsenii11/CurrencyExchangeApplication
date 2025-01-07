@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.utilities
+package com.example.currencyExchangeApplication.presentation.utilities
 
 
 class Links {
