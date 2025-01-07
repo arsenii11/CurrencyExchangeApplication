@@ -11,9 +11,9 @@ class MainViewModelFactory @Inject constructor(
     private val useCase: DataUseCase
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+        if (modelClass.isAssignableFrom(ExchangeViewModel::class.java)) {
             @Suppress("UNCHECKED_CAST")
-            return MainViewModel(application, useCase) as T
+            return ExchangeViewModel(application, useCase) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -26,7 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
-import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity
+import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.presentation.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -53,7 +53,7 @@ class HistoryActivity : ComponentActivity() {
 
 @Composable
 fun HistoryScreen(
-    requestList: List<ConversionHistoryEntity>,
+    requestList: List<HistoryListItem>,
     onBackClick: () -> Unit,
     onDeleteClick: () -> Unit,
 ) {
@@ -71,7 +71,8 @@ fun HistoryScreen(
                 .padding(horizontal = 50.dp)
                 .padding(top = 30.dp),
             colors = ButtonDefaults.buttonColors(contentColor = Color.White),
-            onClick = onBackClick) {
+            onClick = onBackClick
+        ) {
             Text(
                 text = "Back",
                 style = MaterialTheme.typography.h6
@@ -101,6 +102,7 @@ fun HistoryScreen(
                             toCurrency = listItem.toCurrency,
                             amount = listItem.amount,
                             convertedValue = listItem.convertedValue,
+                            conversionRate = listItem.conversionRate // Используем курс обмена
                         )
                     )
                 }
@@ -115,17 +117,18 @@ fun HistoryScreen(
     }
 }
 
+
 @Preview
 @Composable
 private fun AboutScreenPreview() {
     HistoryScreen(
         requestList = listOf(
-            ConversionHistoryEntity(
-                id = 0,
+            HistoryListItem(
                 fromCurrency = "RUB",
                 toCurrency = "EUR",
                 amount = "1000.0",
                 convertedValue = "10.0",
+                conversionRate = "23"
             )
         ), {}, {}
     )

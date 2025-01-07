@@ -12,13 +12,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
-import com.example.currencyExchangeApplication.data.database.ConversionHistoryEntity
+import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.data.model.CurrencyState
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenActions
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
 import com.example.currencyExchangeApplication.data.model.ExchangeState
 import com.example.currencyExchangeApplication.presentation.exchangescreen.ExchangeScreen
-import com.example.currencyExchangeApplication.presentation.exchangescreen.MainViewModel
+import com.example.currencyExchangeApplication.presentation.exchangescreen.ExchangeViewModel
 import com.example.currencyExchangeApplication.presentation.history.HistoryActivity
 import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
 import com.example.currencyExchangeApplication.presentation.utilities.Utility
@@ -29,7 +29,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: MainViewModel by viewModels()
+    private val viewModel: ExchangeViewModel by viewModels()
     private val receiver = MyReceiver()
     private val snackbarHostState = SnackbarHostState()
 
@@ -146,16 +146,8 @@ class MainActivity : ComponentActivity() {
                             from = exchangeState.cur1,
                             to = exchangeState.cur2,
                             amount = exchangeState.num1,
-                            convertedValue = formattedValue
-                        )
-                        viewModel.addEntity(
-                            ConversionHistoryEntity(
-                                id = 0,
-                                fromCurrency = exchangeState.cur1,
-                                toCurrency = exchangeState.cur2,
-                                amount = exchangeState.num1,
-                                convertedValue = formattedValue
-                            )
+                            convertedValue = formattedValue,
+                            rateAtConversion = entry.value.rate
                         )
                     }
                 }

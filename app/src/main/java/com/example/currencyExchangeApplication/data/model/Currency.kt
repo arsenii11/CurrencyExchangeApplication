@@ -10,3 +10,9 @@ data class ApiResponse(
     val status: String,
     val updatedDate: String
 )
+
+data class Rates(
+    val currencyName: String,
+    val rate: String,
+    val rateForAmount: Double
+)
