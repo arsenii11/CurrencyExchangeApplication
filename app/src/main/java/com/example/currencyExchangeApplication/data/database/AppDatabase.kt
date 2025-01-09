@@ -6,12 +6,31 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.currencyExchangeApplication.data.database.dao.ConversionHistoryDao
 import com.example.currencyExchangeApplication.data.database.dao.ConversionRateDao
+import com.example.currencyExchangeApplication.data.database.entities.AppLogsEntity
+import com.example.currencyExchangeApplication.data.database.entities.CategoryAssignmentsEntity
+import com.example.currencyExchangeApplication.data.database.entities.ConversionCategoriesEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionRateRecordEntity
+import com.example.currencyExchangeApplication.data.database.entities.ExchangeSessionEntity
+import com.example.currencyExchangeApplication.data.database.entities.FavoriteConversionsEntity
+import com.example.currencyExchangeApplication.data.database.entities.QuickAccessPairsEntity
+import com.example.currencyExchangeApplication.data.database.entities.UserEntity
+import com.example.currencyExchangeApplication.data.database.entities.UserPreferencesEntity
 
 @Database(
-    entities = [ConversionHistoryEntity::class, ConversionRateRecordEntity::class],
-    version = 2, // Incremented version to reflect new table addition
+    entities = [
+        ConversionHistoryEntity::class,
+        ConversionRateRecordEntity::class,
+        UserEntity::class,
+        UserPreferencesEntity::class,
+        FavoriteConversionsEntity::class,
+        ConversionCategoriesEntity::class,
+        CategoryAssignmentsEntity::class,
+        AppLogsEntity::class,
+        ExchangeSessionEntity::class,
+        QuickAccessPairsEntity::class
+    ],
+    version = 5,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -34,7 +53,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "app_database"
                 )
-                    .fallbackToDestructiveMigration() // Handle migration during development
+                    .fallbackToDestructiveMigration() // Пересоздает базу данных при увеличении версии
                     .build()
                 INSTANCE = instance
                 return instance
