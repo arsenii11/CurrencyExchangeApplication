@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey
 )
 data class FavoriteConversionsEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val userId: Long, // Foreign key
+    val userId: Long,
     val fromCurrency: String,
     val toCurrency: String,
     val userNote: String? = null

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionRateRecordEntity
+import com.example.currencyExchangeApplication.data.database.entities.QuickAccessPairsEntity
 import com.example.currencyExchangeApplication.data.database.entities.UserPreferencesEntity
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
 import com.example.currencyExchangeApplication.data.model.CurrencyState
@@ -25,6 +26,10 @@ class ExchangeViewModel @Inject constructor(
     private val defaultFromCurrency = "USD"
     private val defaultToCurrency = "EUR"
 
+    private val _quickAccessPairs = MutableStateFlow<List<QuickAccessPairsEntity>>(emptyList())
+    val quickAccessPairs: StateFlow<List<QuickAccessPairsEntity>> = _quickAccessPairs
+
+
     private val _exchangeScreenState = MutableStateFlow(ExchangeScreenState())
     val exchangeScreenState: StateFlow<ExchangeScreenState> = _exchangeScreenState
 
@@ -43,6 +48,7 @@ class ExchangeViewModel @Inject constructor(
                     preferences.preferredToCurrency
                 )
             }
+            loadQuickAccessPairs()
         }
     }
 
@@ -120,7 +126,47 @@ class ExchangeViewModel @Inject constructor(
         }
     }
 
-    // В ExchangeViewModel.kt
+    private fun loadQuickAccessPairs() {
+        viewModelScope.launch {
+            _quickAccessPairs.value = repository.getQuickAccessPairs(userId = 1L)
+        }
+    }
+
+
+    fun addToQuickAccessPairs(fromCurrency: String, toCurrency: String) {
+        viewModelScope.launch {
+            val pair = QuickAccessPairsEntity(
+                fromCurrency = fromCurrency,
+                toCurrency = toCurrency,
+                userId = 1L
+            )
+            repository.saveQuickAccessPair(pair)
+            loadQuickAccessPairs()
+        }
+    }
+
+    fun onQuickAccessPairClick(pair: QuickAccessPairsEntity) {
+        _exchangeScreenState.update { state ->
+            state.copy(
+                currency1 = state.currency1.copy(selectedCurrency = pair.fromCurrency),
+                currency2 = state.currency2.copy(selectedCurrency = pair.toCurrency)
+            )
+        }
+        incrementUsageCount(pair.id)
+    }
+
+    private fun incrementUsageCount(pairId: Long) {
+        viewModelScope.launch {
+            repository.incrementUsageCount(pairId)
+        }
+    }
+
+    fun deleteQuickAccessPair(pair: QuickAccessPairsEntity) {
+        viewModelScope.launch {
+            repository.deleteQuickAccessPair(pair)
+            loadQuickAccessPairs()
+        }
+    }
 
     fun handleDoneClick(apiKey: String) {
         viewModelScope.launch {
