@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "app_logs")
 data class AppLogsEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
-    val eventType: String, // Например, "API_REQUEST", "ERROR"
+    val eventType: String,
     val timestamp: Long,
     val message: String
 )
