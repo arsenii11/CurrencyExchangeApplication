@@ -32,14 +32,8 @@
         </activity>
 
         <activity
-            android:name="com.example.currencyExchangeApplication.presentation.history.HistoryActivity"
-            android:exported="true">
-        </activity>
-
-        <activity
             android:name="com.example.currencyExchangeApplication.presentation.MainActivity"
             android:exported="true"
-            android:label="@string/app_name"
             android:theme="@style/Theme.CurrencyExchangeApplication.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,47 +25,73 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
-import androidx.compose.material.SnackbarHost
-import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.conferoapplication.R
-import com.example.currencyExchangeApplication.data.model.CurrencyState
-import com.example.currencyExchangeApplication.data.model.ExchangeScreenActions
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
 import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
+import com.example.currencyExchangeApplication.presentation.utilities.Links
+
 
 @Composable
 fun ExchangeScreen(
-    state: ExchangeScreenState,
-    actions: ExchangeScreenActions
+    navController: NavController,
+    viewModel: ExchangeViewModel = hiltViewModel()
 ) {
+    val exchangeScreenState by viewModel.exchangeScreenState.collectAsStateWithLifecycle()
+    val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+    val scaffoldState = rememberScaffoldState()
+
+    // Обработка сообщений об ошибках и отображение Snackbar
+    LaunchedEffect(errorMessage) {
+        if (errorMessage.isNotEmpty()) {
+            scaffoldState.snackbarHostState.showSnackbar(errorMessage)
+            viewModel.clearErrorMessage()
+        }
+    }
+
     Scaffold(
+        scaffoldState = scaffoldState,
         topBar = {
             TopAppBar(
                 title = { Text("Currency Exchange") },
                 backgroundColor = MaterialTheme.colors.primary,
-                contentColor = MaterialTheme.colors.onPrimary
+                contentColor = MaterialTheme.colors.onPrimary,
+                actions = {
+                    IconButton(onClick = {  navController.navigate("settings")}) {
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "Settings"
+                        )
+                    }
+                }
             )
         },
-        snackbarHost = { SnackbarHost(hostState = state.snackbarHostState) },
         content = { innerPadding ->
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(innerPadding)
                     .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState()),
@@ -75,18 +100,18 @@ fun ExchangeScreen(
             ) {
                 // Currency Selection Section
                 CurrencySection(
-                    state = state,
-                    onSwapClick = actions.onSwapClick
+                    state = exchangeScreenState,
+                    onSwapClick = { viewModel.swapCurrencies() }
                 )
 
-                // Action Buttons
+                // Кнопки действий
                 ActionButtons(
-                    onDoneClick = actions.onDoneClick,
-                    onHistoryClick = actions.onHistoryClick
+                    onDoneClick = { viewModel.handleDoneClick(Links.API_KEY) },
+                    onHistoryClick = { navController.navigate("history") }
                 )
 
-                // Loading Indicator
-                if (state.isLoading) {
+                // Индикатор загрузки
+                if (exchangeScreenState.isLoading) {
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
                         color = MaterialTheme.colors.primary
@@ -105,20 +130,24 @@ fun CurrencySection(
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced spacing between rows
+        verticalArrangement = Arrangement.spacedBy(8.dp) // Уменьшено расстояние между рядами
     ) {
-        // First Currency Row
+        // Первая строка валюты "From"
         CurrencyRow(
             label = "From",
             selectedCurrency = state.currency1.selectedCurrency,
             currencies = CurrenciesAvailable.currenciesList(),
             amount = state.currency1.amount,
-            onCurrencyChange = state.currency1.onCurrencyChange,
-            onAmountChange = state.currency1.onAmountChange,
-            disabledCurrency = state.currency2.selectedCurrency // Передача
+            onCurrencyChange = { newCurrency ->
+                state.currency1.onCurrencyChange(newCurrency)
+            },
+            onAmountChange = { newAmount ->
+                state.currency1.onAmountChange(newAmount)
+            },
+            disabledCurrency = state.currency2.selectedCurrency // Передача отключенной валюты
         )
 
-        // Swap Button aligned to the right
+        // Кнопка Swap, выровненная по правому краю
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.CenterEnd
@@ -126,7 +155,7 @@ fun CurrencySection(
             IconButton(
                 onClick = onSwapClick,
                 modifier = Modifier
-                    .size(40.dp) // Adjusted size for better aesthetics
+                    .size(40.dp)
                     .background(
                         color = MaterialTheme.colors.surface,
                         shape = MaterialTheme.shapes.medium
@@ -139,8 +168,6 @@ fun CurrencySection(
                 )
             }
         }
-
-        // Second Currency Row
         CurrencyRow(
             label = "To",
             selectedCurrency = state.currency2.selectedCurrency,
@@ -152,8 +179,6 @@ fun CurrencySection(
         )
     }
 }
-
-
 
 @Composable
 fun CurrencyRow(
@@ -190,7 +215,7 @@ fun CurrencyRow(
                     items = currencies,
                     onItemSelected = onCurrencyChange,
                     modifier = Modifier.weight(0.9f),
-                    disabledItem = disabledCurrency // Передача
+                    disabledItem = disabledCurrency // Передача отключенной валюты
                 )
                 // Amount Input
                 OutlinedTextField(
@@ -207,8 +232,6 @@ fun CurrencyRow(
         }
     }
 }
-
-
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -255,8 +278,6 @@ fun DropdownMenuComponent(
     }
 }
 
-
-
 @Composable
 fun ActionButtons(
     onDoneClick: () -> Unit,
@@ -289,29 +310,10 @@ fun ActionButtons(
 @Preview(showBackground = true)
 @Composable
 fun PreviewExchangeScreen() {
-    val snackbarHostState = SnackbarHostState()
-    val state = ExchangeScreenState(
-        currency1 = CurrencyState(
-            selectedCurrency = "EUR",
-            amount = "100",
-            onCurrencyChange = {},
-            onAmountChange = {}
-        ),
-        currency2 = CurrencyState(
-            selectedCurrency = "USD",
-            amount = "120",
-            onCurrencyChange = {},
-            onAmountChange = {}
-        ),
-        isLoading = false,
-        snackbarHostState = snackbarHostState
-    )
-    val actions = ExchangeScreenActions(
-        onSwapClick = {},
-        onDoneClick = {},
-        onHistoryClick = {}
-    )
     MaterialTheme {
-        ExchangeScreen(state = state, actions = actions)
+        ExchangeScreen(
+            navController = rememberNavController(),
+            viewModel = hiltViewModel()
+        )
     }
 }

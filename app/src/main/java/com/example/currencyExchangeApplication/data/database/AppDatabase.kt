@@ -6,6 +6,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.currencyExchangeApplication.data.database.dao.ConversionHistoryDao
 import com.example.currencyExchangeApplication.data.database.dao.ConversionRateDao
+import com.example.currencyExchangeApplication.data.database.dao.UserDao
+import com.example.currencyExchangeApplication.data.database.dao.UserPreferencesDao
 import com.example.currencyExchangeApplication.data.database.entities.AppLogsEntity
 import com.example.currencyExchangeApplication.data.database.entities.CategoryAssignmentsEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionCategoriesEntity
@@ -30,13 +32,15 @@ import com.example.currencyExchangeApplication.data.database.entities.UserPrefer
         ExchangeSessionEntity::class,
         QuickAccessPairsEntity::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
 
     abstract fun conversionHistoryDao(): ConversionHistoryDao
     abstract fun conversionRateDao(): ConversionRateDao
+    abstract fun userPreferencesDao(): UserPreferencesDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile

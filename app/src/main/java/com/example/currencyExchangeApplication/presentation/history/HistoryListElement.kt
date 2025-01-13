@@ -73,9 +73,16 @@ fun HistoryListElement(historyListItem: HistoryListItem) {
                     fontSize = 14.sp
                 )
                 Spacer(modifier = Modifier.weight(1f))
-                Column(Modifier.weight(1f).padding(start = 8.dp)) {
+                Column(
+                    Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)) {
                     Text(text = historyListItem.toCurrency, fontSize = 14.sp)
-                    Text(text = historyListItem.convertedValue, fontSize = 14.sp, color = Color.Gray)
+                    Text(
+                        text = historyListItem.convertedValue,
+                        fontSize = 14.sp,
+                        color = Color.Gray
+                    )
                 }
             }
         }
@@ -101,6 +108,7 @@ fun HistoryListElement(historyListItem: HistoryListItem) {
         )
     }
 }
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewHistoryListElement() {

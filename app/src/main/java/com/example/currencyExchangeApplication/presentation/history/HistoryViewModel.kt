@@ -1,29 +1,50 @@
+// File: com/example/currencyExchangeApplication/presentation/history/HistoryViewModel.kt
+
 package com.example.currencyExchangeApplication.presentation.history
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.currencyExchangeApplication.data.database.AppDatabase
 import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
-import com.example.currencyExchangeApplication.data.database.HistoryRepository
+import com.example.currencyExchangeApplication.data.repository.ExchangeRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 
-class HistoryViewModel(application: Application) : AndroidViewModel(application) {
+@HiltViewModel
+class HistoryViewModel @Inject constructor(
+    private val exchangeRepository: ExchangeRepository
+) : ViewModel() {
 
-    val readAllData: LiveData<List<HistoryListItem>>
-    private val repository: HistoryRepository
+    /**
+     * LiveData emitting a list of [ConversionHistoryEntity].
+     */
+    val readAllData: LiveData<List<ConversionHistoryEntity>> = exchangeRepository.getLatestTransactions()
 
-    init {
-        val historyDao = AppDatabase.getDatabase(application).conversionHistoryDao()
-        repository = HistoryRepository(historyDao)
-        readAllData = repository.getHistoryWithRates()
-    }
+    /**
+     * LiveData emitting a list of [HistoryListItem].
+     */
+    val historyWithRates: LiveData<List<HistoryListItem>> = exchangeRepository.getHistoryWithRates()
 
+    // LiveData для отслеживания успешного удаления всех записей
+    private val _deleteAllSuccess = MutableLiveData<Boolean>(false)
+    val deleteAllSuccess: LiveData<Boolean> = _deleteAllSuccess
+
+    /**
+     * Deletes all conversion history records.
+     */
     fun deleteAll() {
         viewModelScope.launch {
-            repository.deleteAll()
+            exchangeRepository.deleteAllConversions()
+            _deleteAllSuccess.value = true
         }
+    }
+
+    /**
+     * Сбрасывает флаг успешного удаления.
+     */
+    fun resetDeleteAllSuccess() {
+        _deleteAllSuccess.value = false
     }
 }

@@ -3,7 +3,6 @@ package com.example.currencyExchangeApplication
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
 import com.example.currencyExchangeApplication.data.model.ApiResponse
-import com.example.currencyExchangeApplication.domain.DataUseCase
 import com.example.currencyExchangeApplication.presentation.vm.MainViewModel
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
