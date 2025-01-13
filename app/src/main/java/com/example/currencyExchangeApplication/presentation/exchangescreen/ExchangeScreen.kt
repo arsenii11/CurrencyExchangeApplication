@@ -43,6 +43,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,6 +56,7 @@ import com.example.conferoapplication.R
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
 import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
 import com.example.currencyExchangeApplication.presentation.utilities.Links
+import com.example.currencyExchangeApplication.presentation.utilities.Utility
 
 
 @Composable
@@ -64,6 +67,17 @@ fun ExchangeScreen(
     val exchangeScreenState by viewModel.exchangeScreenState.collectAsStateWithLifecycle()
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val scaffoldState = rememberScaffoldState()
+    val context = LocalContext.current
+
+    var isInternetAvailable by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        isInternetAvailable = Utility.isInternetAvailableWithHttpCheck(context)
+        if (!isInternetAvailable) {
+            scaffoldState.snackbarHostState.showSnackbar("No connection")
+        }
+    }
+
 
     LaunchedEffect(errorMessage) {
         if (errorMessage.isNotEmpty()) {
@@ -116,7 +130,8 @@ fun ExchangeScreen(
                 item {
                     ActionButtons(
                         onDoneClick = { viewModel.handleDoneClick(Links.API_KEY) },
-                        onHistoryClick = { navController.navigate("history") }
+                        onHistoryClick = { navController.navigate("history") },
+                        isNetworkAvailable = isInternetAvailable
                     )
                 }
 
@@ -149,7 +164,7 @@ fun ExchangeScreen(
 fun CurrencySection(
     state: ExchangeScreenState,
     onSwapClick: () -> Unit,
-    onAddToQuickAccessPairs: () -> Unit
+    onAddToQuickAccessPairs: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -334,7 +349,8 @@ fun DropdownMenuComponent(
 @Composable
 fun ActionButtons(
     onDoneClick: () -> Unit,
-    onHistoryClick: () -> Unit
+    onHistoryClick: () -> Unit,
+    isNetworkAvailable: Boolean
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(24.dp),
@@ -342,20 +358,31 @@ fun ActionButtons(
     ) {
         Button(
             onClick = onDoneClick,
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
             shape = MaterialTheme.shapes.medium,
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = if (isNetworkAvailable) MaterialTheme.colors.primary else Color.Gray
+            ),
+            enabled = isNetworkAvailable
         ) {
             Text("Convert", style = MaterialTheme.typography.button)
         }
 
         OutlinedButton(
             onClick = onHistoryClick,
-            modifier = Modifier.fillMaxWidth().height(48.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp),
             shape = MaterialTheme.shapes.medium,
             border = BorderStroke(1.dp, MaterialTheme.colors.primary)
         ) {
-            Text("View History", style = MaterialTheme.typography.button, color = MaterialTheme.colors.primary)
+            Text(
+                "View History",
+                style = MaterialTheme.typography.button,
+                color = MaterialTheme.colors.primary
+            )
         }
     }
 }

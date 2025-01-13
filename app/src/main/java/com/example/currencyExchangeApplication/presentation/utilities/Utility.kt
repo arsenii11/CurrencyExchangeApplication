@@ -7,6 +7,11 @@ import android.net.NetworkCapabilities
 import android.os.Build
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.io.IOException
 
 
 object Utility {
@@ -54,5 +59,31 @@ object Utility {
             }
         }
         return false
+    }
+
+    // Проверка доступности интернета с HTTP-запросом
+    suspend fun isInternetAvailableWithHttpCheck(context: Context?): Boolean {
+        if (!isNetworkAvailable(context)) return false
+        return isInternetAvailable()
+    }
+
+    private suspend fun isInternetAvailable(url: String = "https://www.google.com", timeoutSeconds: Int = 2): Boolean {
+        return withContext(Dispatchers.IO) {
+            val client = OkHttpClient.Builder()
+                .callTimeout(timeoutSeconds.toLong(), java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+
+            val request = Request.Builder()
+                .url(url)
+                .build()
+
+            return@withContext try {
+                client.newCall(request).execute().use { response ->
+                    response.isSuccessful
+                }
+            } catch (e: IOException) {
+                false
+            }
+        }
     }
 }

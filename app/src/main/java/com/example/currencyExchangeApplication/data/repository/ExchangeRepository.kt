@@ -7,12 +7,9 @@ import com.example.currencyExchangeApplication.data.api.RetrofitInstance
 import com.example.currencyExchangeApplication.data.database.dao.ConversionHistoryDao
 import com.example.currencyExchangeApplication.data.database.dao.ConversionRateDao
 import com.example.currencyExchangeApplication.data.database.dao.QuickAccessPairsDao
-import com.example.currencyExchangeApplication.data.database.dao.QuickAccessPairsDao_Impl
-import com.example.currencyExchangeApplication.data.database.dao.UserPreferencesDao
 import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionRateRecordEntity
 import com.example.currencyExchangeApplication.data.database.entities.QuickAccessPairsEntity
-import com.example.currencyExchangeApplication.data.database.entities.UserPreferencesEntity
 import com.example.currencyExchangeApplication.data.model.ApiResponse
 import com.example.currencyExchangeApplication.presentation.history.HistoryListItem
 import retrofit2.Response
