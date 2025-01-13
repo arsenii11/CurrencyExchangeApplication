@@ -4,10 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyExchangeApplication.data.database.entities.ConversionHistoryEntity
 import com.example.currencyExchangeApplication.data.database.entities.ConversionRateRecordEntity
+import com.example.currencyExchangeApplication.data.database.entities.UserPreferencesEntity
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
 import com.example.currencyExchangeApplication.data.model.CurrencyState
 import com.example.currencyExchangeApplication.data.repository.ExchangeRepository
-import com.example.currencyExchangeApplication.presentation.utilities.Utility
+import com.example.currencyExchangeApplication.data.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,30 +18,52 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class ExchangeViewModel @Inject constructor(
-    private val repository: ExchangeRepository
+    private val repository: ExchangeRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
 ) : ViewModel() {
 
-    private val _exchangeScreenState = MutableStateFlow(
-        ExchangeScreenState(
+    private val defaultFromCurrency = "USD"
+    private val defaultToCurrency = "EUR"
+
+    private val _exchangeScreenState = MutableStateFlow(ExchangeScreenState())
+    val exchangeScreenState: StateFlow<ExchangeScreenState> = _exchangeScreenState
+
+    private val _errorMessage = MutableStateFlow("")
+    val errorMessage: StateFlow<String> = _errorMessage
+
+    init {
+        viewModelScope.launch {
+            val preferences = userPreferencesRepository.getUserPreferences(1L)
+            if (preferences == null) {
+                setDefaultExchangeScreenState(defaultFromCurrency, defaultToCurrency)
+            } else {
+                // Use existing preferences
+                setDefaultExchangeScreenState(
+                    preferences.preferredFromCurrency,
+                    preferences.preferredToCurrency
+                )
+            }
+        }
+    }
+
+    private fun setDefaultExchangeScreenState(fromCurrency: String, toCurrency: String) {
+        _exchangeScreenState.value = ExchangeScreenState(
             currency1 = CurrencyState(
-                selectedCurrency = "USD",
+                selectedCurrency = fromCurrency,
                 amount = "",
                 onCurrencyChange = ::onCurrency1Changed,
                 onAmountChange = ::onAmount1Changed
             ),
             currency2 = CurrencyState(
-                selectedCurrency = "EUR",
+                selectedCurrency = toCurrency,
                 amount = "",
                 onCurrencyChange = ::onCurrency2Changed,
                 onAmountChange = ::onAmount2Changed
             ),
             isLoading = false
         )
-    )
-    val exchangeScreenState: StateFlow<ExchangeScreenState> = _exchangeScreenState
+    }
 
-    private val _errorMessage = MutableStateFlow("")
-    val errorMessage: StateFlow<String> = _errorMessage
 
     fun onAmount1Changed(newAmount: String) {
         _exchangeScreenState.update { currentState ->

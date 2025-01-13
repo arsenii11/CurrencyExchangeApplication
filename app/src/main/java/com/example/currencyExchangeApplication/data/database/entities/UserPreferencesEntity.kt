@@ -13,7 +13,7 @@ import androidx.room.PrimaryKey
     )]
 )
 data class UserPreferencesEntity(
-    @PrimaryKey(autoGenerate = true) val id: Long = 0,
+    @PrimaryKey val id: Long = 1,
     val userId: Long, // Foreign key
     val preferredFromCurrency: String,
     val preferredToCurrency: String,

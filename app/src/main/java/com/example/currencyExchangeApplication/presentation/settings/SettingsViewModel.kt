@@ -6,7 +6,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.currencyExchangeApplication.data.database.entities.UserPreferencesEntity
-import com.example.currencyExchangeApplication.data.repository.ExchangeRepository
 import com.example.currencyExchangeApplication.data.repository.UserPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -60,6 +59,12 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 Log.d("SettingsViewModel", "Saving preferences: $fromCurrency, $toCurrency, $theme")
+
+                if (fromCurrency == toCurrency) {
+                    _snackbarMessage.value = "From and To currencies cannot be the same"
+                    return@launch
+                }
+
                 val preferences = UserPreferencesEntity(
                     userId = 1L,
                     preferredFromCurrency = fromCurrency,
