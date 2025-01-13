@@ -7,12 +7,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
@@ -29,15 +30,16 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,7 +65,6 @@ fun ExchangeScreen(
     val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
     val scaffoldState = rememberScaffoldState()
 
-    // Обработка сообщений об ошибках и отображение Snackbar
     LaunchedEffect(errorMessage) {
         if (errorMessage.isNotEmpty()) {
             scaffoldState.snackbarHostState.showSnackbar(errorMessage)
@@ -79,7 +80,7 @@ fun ExchangeScreen(
                 backgroundColor = MaterialTheme.colors.primary,
                 contentColor = MaterialTheme.colors.onPrimary,
                 actions = {
-                    IconButton(onClick = {  navController.navigate("settings")}) {
+                    IconButton(onClick = { navController.navigate("settings") }) {
                         Icon(
                             imageVector = Icons.Default.Settings,
                             contentDescription = "Settings"
@@ -89,32 +90,53 @@ fun ExchangeScreen(
             )
         },
         content = { innerPadding ->
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(innerPadding)
-                    .padding(horizontal = 16.dp)
-                    .verticalScroll(rememberScrollState()),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 // Currency Selection Section
-                CurrencySection(
-                    state = exchangeScreenState,
-                    onSwapClick = { viewModel.swapCurrencies() }
-                )
+                item {
+                    CurrencySection(
+                        state = exchangeScreenState,
+                        onSwapClick = { viewModel.swapCurrencies() },
+                        onAddToQuickAccessPairs = {
+                            viewModel.addToQuickAccessPairs(
+                                fromCurrency = exchangeScreenState.currency1.selectedCurrency,
+                                toCurrency = exchangeScreenState.currency2.selectedCurrency
+                            )
+                        }
+                    )
+                }
 
-                // Кнопки действий
-                ActionButtons(
-                    onDoneClick = { viewModel.handleDoneClick(Links.API_KEY) },
-                    onHistoryClick = { navController.navigate("history") }
-                )
+                // Action Buttons
+                item {
+                    ActionButtons(
+                        onDoneClick = { viewModel.handleDoneClick(Links.API_KEY) },
+                        onHistoryClick = { navController.navigate("history") }
+                    )
+                }
 
-                // Индикатор загрузки
+                // Loading Indicator
                 if (exchangeScreenState.isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.size(48.dp),
-                        color = MaterialTheme.colors.primary
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .size(48.dp),
+                            color = MaterialTheme.colors.primary
+                        )
+                    }
+                }
+
+                // Quick Access Pairs Section
+                item {
+                    QuickAccessPairsSection(
+                        quickAccessPairs = viewModel.quickAccessPairs.collectAsState().value,
+                        onQuickAccessPairClick = viewModel::onQuickAccessPairClick,
+                        onDeletePairClick = viewModel::deleteQuickAccessPair
                     )
                 }
             }
@@ -122,17 +144,19 @@ fun ExchangeScreen(
     )
 }
 
+
 @Composable
 fun CurrencySection(
     state: ExchangeScreenState,
-    onSwapClick: () -> Unit
+    onSwapClick: () -> Unit,
+    onAddToQuickAccessPairs: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(8.dp) // Уменьшено расстояние между рядами
+        verticalArrangement = Arrangement.spacedBy(8.dp) // Reduced spacing between rows
     ) {
-        // Первая строка валюты "From"
+        // First Currency Row ("From")
         CurrencyRow(
             label = "From",
             selectedCurrency = state.currency1.selectedCurrency,
@@ -144,14 +168,40 @@ fun CurrencySection(
             onAmountChange = { newAmount ->
                 state.currency1.onAmountChange(newAmount)
             },
-            disabledCurrency = state.currency2.selectedCurrency // Передача отключенной валюты
+            disabledCurrency = state.currency2.selectedCurrency // Passing the disabled currency
         )
 
-        // Кнопка Swap, выровненная по правому краю
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.CenterEnd
+        // Buttons Row: Swap and Quick Pairs
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Quick Pairs Button
+            Button(
+                onClick = onAddToQuickAccessPairs,
+                modifier = Modifier
+                    .padding(start = 10.dp)
+                    .height(40.dp),
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.secondary)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Quick Pair",
+                    tint = MaterialTheme.colors.onSecondary
+                )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = "Quick Pairs",
+                    color = MaterialTheme.colors.onSecondary
+                )
+            }
+
+            Spacer(modifier = Modifier.weight(1f)) // Space between buttons
+
+            // Swap Button
             IconButton(
                 onClick = onSwapClick,
                 modifier = Modifier
@@ -162,12 +212,14 @@ fun CurrencySection(
                     )
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.ic_swap), // Using Material Icon for consistency
+                    painter = painterResource(R.drawable.ic_swap), // Ensure you have this drawable
                     contentDescription = "Swap Currencies",
                     tint = MaterialTheme.colors.primary
                 )
             }
         }
+
+        // Second Currency Row ("To")
         CurrencyRow(
             label = "To",
             selectedCurrency = state.currency2.selectedCurrency,
@@ -175,10 +227,11 @@ fun CurrencySection(
             amount = state.currency2.amount,
             onCurrencyChange = state.currency2.onCurrencyChange,
             onAmountChange = state.currency2.onAmountChange,
-            disabledCurrency = state.currency1.selectedCurrency // Передача
+            disabledCurrency = state.currency1.selectedCurrency // Passing the disabled currency
         )
     }
 }
+
 
 @Composable
 fun CurrencyRow(

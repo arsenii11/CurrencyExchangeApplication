@@ -8,6 +8,7 @@ import androidx.room.Room
 import com.example.currencyExchangeApplication.data.database.AppDatabase
 import com.example.currencyExchangeApplication.data.database.dao.ConversionHistoryDao
 import com.example.currencyExchangeApplication.data.database.dao.ConversionRateDao
+import com.example.currencyExchangeApplication.data.database.dao.QuickAccessPairsDao
 import com.example.currencyExchangeApplication.data.database.dao.UserDao
 import com.example.currencyExchangeApplication.data.database.dao.UserPreferencesDao
 import com.example.currencyExchangeApplication.data.repository.HomeRepository
@@ -74,6 +75,15 @@ object AppModule {
     @Singleton
     fun provideUserPreferencesDao(appDatabase: AppDatabase): UserPreferencesDao {
         return appDatabase.userPreferencesDao()
+    }
+
+    /**
+     * Provides QuickAccessPairsDao.
+     */
+    @Provides
+    @Singleton
+    fun provideQuickAccessPairsDao(appDatabase: AppDatabase): QuickAccessPairsDao {
+        return appDatabase.quickAccessPairsDao()
     }
 
     /**

@@ -7,5 +7,7 @@ import androidx.room.PrimaryKey
 data class QuickAccessPairsEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val fromCurrency: String,
-    val toCurrency: String
+    val toCurrency: String,
+    val userId: Long,
+    val usageCount: Int = 0
 )
