@@ -47,6 +47,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -247,7 +249,6 @@ fun CurrencySection(
     }
 }
 
-
 @Composable
 fun CurrencyRow(
     label: String,
@@ -277,13 +278,13 @@ fun CurrencyRow(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                // Currency Selector
+                // Currency Selector с фиксированной шириной
                 DropdownMenuComponent(
                     selectedItem = selectedCurrency,
                     items = currencies,
                     onItemSelected = onCurrencyChange,
-                    modifier = Modifier.weight(0.9f),
-                    disabledItem = disabledCurrency // Передача отключенной валюты
+                    modifier = Modifier.width(120.dp), // Фиксированная ширина
+                    disabledItem = disabledCurrency
                 )
                 // Amount Input
                 OutlinedTextField(
@@ -292,9 +293,9 @@ fun CurrencyRow(
                     label = { Text("Amount") },
                     singleLine = true,
                     modifier = Modifier
-                        .weight(2f)
+                        .weight(1f)
                         .fillMaxWidth(),
-                    isError = amount.toDoubleOrNull()?.let { it <= 0 } ?: false // Валидация
+                    isError = amount.toDoubleOrNull()?.let { it <= 0 } ?: false
                 )
             }
         }
@@ -396,4 +397,55 @@ fun PreviewExchangeScreen() {
             viewModel = hiltViewModel()
         )
     }
+}
+
+// Дата класс для параметров превью
+data class CurrencyRowParams(
+    val label: String,
+    val selectedCurrency: String,
+    val currencies: List<String>,
+    val amount: String,
+    val disabledCurrency: String? = null
+)
+
+// Провайдер параметров для превью
+class CurrencyRowParamsProvider : PreviewParameterProvider<CurrencyRowParams> {
+    override val values = sequenceOf(
+        CurrencyRowParams(
+            label = "Convert from",
+            selectedCurrency = "USD",
+            currencies = listOf("USD", "EUR", "GBP", "JPY", "RUB"),
+            amount = "100.00"
+        ),
+        CurrencyRowParams(
+            label = "Convert to",
+            selectedCurrency = "EUR",
+            currencies = listOf("USD", "EUR", "GBP", "JPY", "RUB"),
+            amount = "92.45",
+            disabledCurrency = "USD"
+        )
+    )
+}
+
+@Preview(
+    name = "Currency Row Mobile",
+    device = "spec:width=360dp,height=800dp,dpi=440"
+)
+@Preview(
+    name = "Currency Row Tablet",
+    device = "spec:width=800dp,height=1280dp,dpi=440"
+)
+@Composable
+fun CurrencyRowPreview(
+    @PreviewParameter(CurrencyRowParamsProvider::class) params: CurrencyRowParams
+) {
+    CurrencyRow(
+        label = params.label,
+        selectedCurrency = params.selectedCurrency,
+        currencies = params.currencies,
+        amount = params.amount,
+        onCurrencyChange = { },
+        onAmountChange = { },
+        disabledCurrency = params.disabledCurrency
+    )
 }
