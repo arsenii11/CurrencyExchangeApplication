@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.presentation.utilities
+package com.utilities
 
 import android.app.Activity
 import android.content.Context
@@ -15,19 +15,6 @@ import java.io.IOException
 
 
 object Utility {
-
-
-    //Hide keyboard
-    fun hideKeyboard(activity: Activity) {
-        val input: InputMethodManager =
-            activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-        var view: View? = activity.currentFocus
-        if (view == null) {
-            view = View(activity)
-        }
-        input.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
 
     //Network connection check
     fun isNetworkAvailable(context: Context?): Boolean {

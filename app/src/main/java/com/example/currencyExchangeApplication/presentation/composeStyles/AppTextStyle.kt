@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.presentation.utilities.composeStyles
+package com.example.currencyExchangeApplication.presentation.composeStyles
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.presentation.utilities
+package com.utilities
 
 object CurrenciesAvailable {
     fun currenciesList(): List<String> = listOf(

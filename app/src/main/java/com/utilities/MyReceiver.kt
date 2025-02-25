@@ -1,4 +1,4 @@
-package com.example.currencyExchangeApplication.presentation.utilities
+package com.utilities
 
 import android.content.BroadcastReceiver
 import android.content.Context

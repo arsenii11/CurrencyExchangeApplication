@@ -20,11 +20,3 @@ data class CurrencyState(
     val onCurrencyChange: (String) -> Unit = {},
     val onAmountChange: (String) -> Unit = {}
 )
-
-// Encapsulates actions performed on the screen
-data class ExchangeScreenActions(
-    val onSwapClick: () -> Unit,
-    val onDoneClick: () -> Unit,
-    val onHistoryClick: () -> Unit,
-    val onSettingsClick: () -> Unit // New callback for settings navigation
-)

@@ -1,6 +1,7 @@
 package com.example.currencyExchangeApplication.presentation.settings
 
 import android.util.Log
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
+import com.utilities.CurrenciesAvailable
 
 /**
  * Holds UI-related data for the Settings screen.
@@ -48,7 +49,8 @@ import com.example.currencyExchangeApplication.presentation.utilities.Currencies
 data class SettingsScreenState(
     val defaultFromCurrency: String = "EUR",
     val defaultToCurrency: String = "USD",
-    val theme: String = "Light"
+    // Используем значение в нижнем регистре для корректного сравнения
+    val theme: String = "light"
 )
 
 /**
@@ -130,7 +132,8 @@ fun SettingsScreen(
 
             Button(
                 onClick = {
-                    viewModel.savePreferences(fromCurrency, toCurrency, theme)
+                    // Передаём значение темы в нижнем регистре для корректного сравнения
+                    viewModel.savePreferences(fromCurrency, toCurrency, theme.lowercase())
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -246,7 +249,7 @@ fun PreviewSettingsScreen() {
     val state = SettingsScreenState(
         defaultFromCurrency = "EUR",
         defaultToCurrency = "USD",
-        theme = "Dark"
+        theme = "dark" // для превью используем "dark" в нижнем регистре
     )
     val actions = SettingsScreenActions(
         onBackClick = {},

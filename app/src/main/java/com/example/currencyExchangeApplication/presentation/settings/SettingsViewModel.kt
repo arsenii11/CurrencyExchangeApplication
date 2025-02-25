@@ -58,8 +58,6 @@ class SettingsViewModel @Inject constructor(
     fun savePreferences(fromCurrency: String, toCurrency: String, theme: String) {
         viewModelScope.launch {
             try {
-                Log.d("SettingsViewModel", "Saving preferences: $fromCurrency, $toCurrency, $theme")
-
                 if (fromCurrency == toCurrency) {
                     _snackbarMessage.value = "From and To currencies cannot be the same"
                     return@launch
@@ -72,10 +70,15 @@ class SettingsViewModel @Inject constructor(
                     theme = theme
                 )
                 userPreferencesRepository.saveUserPreferences(preferences)
+
+                // Обновляем состояние сразу
+                _settingsState.value = _settingsState.value.copy(
+                    defaultFromCurrency = fromCurrency,
+                    defaultToCurrency = toCurrency,
+                    theme = theme.lowercase()
+                )
                 _snackbarMessage.value = "Preferences saved successfully"
-                loadUserPreferences() // Reload preferences after saving
             } catch (e: Exception) {
-                Log.e("SettingsViewModel", "Error saving preferences", e)
                 _snackbarMessage.value = "Failed to save preferences: ${e.message}"
             }
         }

@@ -1,6 +1,7 @@
 package com.example.currencyExchangeApplication.presentation.utilities.composeStyles
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -20,12 +21,12 @@ object AppColor {
         val Transparent: Color @Composable get() = Color.Transparent
     }
 
-    val text: Color @Composable get() = if (isSystemInDarkTheme()) Palette.White else Palette.Black
+    val text: Color @Composable get() = if (!MaterialTheme.colors.isLight) Palette.White else Palette.Black
     val textLight: Color @Composable get() = text.copy(alpha = 0.6F)
     val textUltraLight: Color @Composable get() = text.copy(alpha = 0.3F)
-    val toolbar: Color @Composable get() = if (isSystemInDarkTheme()) Palette.N_01 else Palette.White
-    val background: Color @Composable get() = if (isSystemInDarkTheme()) Palette.N_01 else Palette.White
-    val backgroundFloat: Color @Composable get() = if (isSystemInDarkTheme()) Palette.N_02 else Palette.White
-    val backgroundSecondary: Color @Composable get() = if (isSystemInDarkTheme()) Palette.Black else Palette.N_02
+    val toolbar: Color @Composable get() = if (!MaterialTheme.colors.isLight) Palette.N_01 else Palette.White
+    val background: Color @Composable get() = if (!MaterialTheme.colors.isLight) Palette.N_01 else Palette.White
+    val backgroundFloat: Color @Composable get() = if (!MaterialTheme.colors.isLight) Palette.N_02 else Palette.White
+    val backgroundSecondary: Color @Composable get() = if (!MaterialTheme.colors.isLight) Palette.Black else Palette.N_02
 
 }

@@ -56,9 +56,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.conferoapplication.R
 import com.example.currencyExchangeApplication.data.model.ExchangeScreenState
-import com.example.currencyExchangeApplication.presentation.utilities.CurrenciesAvailable
-import com.example.currencyExchangeApplication.presentation.utilities.Links
-import com.example.currencyExchangeApplication.presentation.utilities.Utility
+import com.utilities.CurrenciesAvailable
+import com.utilities.Links
+import com.utilities.Utility
 
 
 @Composable

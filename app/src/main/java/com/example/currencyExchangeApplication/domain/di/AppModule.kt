@@ -103,6 +103,4 @@ object AppModule {
     fun provideUserPreferencesRepository(userPreferencesDao: UserPreferencesDao): UserPreferencesRepository {
         return UserPreferencesRepository(userPreferencesDao)
     }
-
-    // Add other repository providers as needed
 }

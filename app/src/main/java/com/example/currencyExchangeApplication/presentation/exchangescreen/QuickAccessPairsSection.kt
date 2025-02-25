@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.currencyExchangeApplication.data.database.entities.QuickAccessPairsEntity
-import com.example.currencyExchangeApplication.presentation.utilities.composeStyles.AppTextStyle
+import com.example.currencyExchangeApplication.presentation.composeStyles.AppTextStyle
 
 @Composable
 fun QuickAccessPairsSection(

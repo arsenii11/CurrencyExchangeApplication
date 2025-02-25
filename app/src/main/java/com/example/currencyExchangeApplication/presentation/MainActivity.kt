@@ -32,8 +32,13 @@ import com.example.currencyExchangeApplication.presentation.homescreen.HomeScree
 import com.example.currencyExchangeApplication.presentation.settings.SettingsScreen
 import com.example.currencyExchangeApplication.presentation.settings.SettingsScreenActions
 import com.example.currencyExchangeApplication.presentation.settings.SettingsViewModel
-import com.example.currencyExchangeApplication.presentation.utilities.MyReceiver
+import com.utilities.MyReceiver
 import dagger.hilt.android.AndroidEntryPoint
+
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.currencyExchangeApplication.presentation.composeStyles.CurrencyExchangeApplicationTheme
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -43,14 +48,22 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         registerReceiver(receiver, IntentFilter(Intent.ACTION_AIRPLANE_MODE_CHANGED))
 
+        // MainActivity.kt
         setContent {
-            MaterialTheme {
+            // Получаем экземпляр SettingsViewModel, привязанный к Activity
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            val settingsState by settingsViewModel.settingsState.collectAsState()
+
+            CurrencyExchangeApplicationTheme(
+                darkTheme = settingsState.theme.lowercase() == "dark"
+            ) {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val navController = rememberNavController()
-                    AppNavigation(navController = navController)
+                    AppNavigation(navController = navController, settingsViewModel = settingsViewModel)
                 }
             }
         }
+
     }
 
     override fun onDestroy() {
@@ -58,6 +71,7 @@ class MainActivity : ComponentActivity() {
         unregisterReceiver(receiver)
     }
 }
+
 
 sealed class Screen(val route: String) {
     object Home : Screen("home")
@@ -67,7 +81,7 @@ sealed class Screen(val route: String) {
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController) {
+fun AppNavigation(navController: NavHostController,settingsViewModel: SettingsViewModel) {
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route
@@ -91,36 +105,11 @@ fun AppNavigation(navController: NavHostController) {
         }
 
         composable(Screen.Settings.route) {
-            val viewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(
                 onNavigateBack = { navController.popBackStack() },
-                viewModel = viewModel
+                viewModel = settingsViewModel
             )
         }
     }
 }
 
-// Add a TopAppBar component that can be reused across screens
-@Composable
-fun AppTopBar(
-    title: String,
-    onBackClick: (() -> Unit)? = null,
-    actions: @Composable RowScope.() -> Unit = {}
-) {
-    TopAppBar(
-        title = { Text(title) },
-        navigationIcon = onBackClick?.let {
-            {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }
-        },
-        actions = actions,
-        backgroundColor = MaterialTheme.colors.primary,
-        contentColor = MaterialTheme.colors.onPrimary
-    )
-}
