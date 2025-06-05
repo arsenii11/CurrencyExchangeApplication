@@ -1,5 +1,3 @@
-// File: com/example/currencyExchangeApplication/presentation/homescreen/HomeViewModel.kt
-
 package com.example.currencyExchangeApplication.presentation.homescreen
 
 import androidx.lifecycle.ViewModel
@@ -16,34 +14,34 @@ class HomeViewModel @Inject constructor(
     private val repository: HomeRepository
 ) : ViewModel() {
 
-    // StateFlow для хранения текущего пользователя
+    // StateFlow for storing current user
     private val _user = MutableStateFlow<UserEntity?>(null)
     val user: StateFlow<UserEntity?> = _user.asStateFlow()
 
     init {
-        // Загрузка существующего пользователя при инициализации ViewModel
+        // Load existing user when ViewModel is initialized
         viewModelScope.launch {
             _user.value = repository.fetchUser()
         }
     }
 
     /**
-     * Сохраняет пользователя в базе данных и обновляет состояние.
+     * Saves user to database and updates state.
      */
     fun saveUser(nickname: String, email: String = "") {
         viewModelScope.launch {
             repository.saveUser(nickname, email)
-            _user.value = repository.fetchUser() // Обновление данных пользователя
+            _user.value = repository.fetchUser() // Update user data
         }
     }
 
     /**
-     * Удаляет пользователя из базы данных и очищает состояние.
+     * Deletes user from database and clears state.
      */
     fun deleteUser() {
         viewModelScope.launch {
             repository.deleteUser()
-            _user.value = null // Очистка данных пользователя
+            _user.value = null // Clear user data
         }
     }
 }

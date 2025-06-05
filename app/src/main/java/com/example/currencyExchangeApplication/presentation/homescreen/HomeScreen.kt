@@ -37,13 +37,13 @@ fun HomeScreen(
 ) {
     val scaffoldState = rememberScaffoldState()
 
-    // Сбор состояния пользователя из ViewModel
+    // Collect user state from ViewModel
     val user by viewModel.user.collectAsStateWithLifecycle()
 
-    // Локальное состояние для ввода имени пользователя
+    // Local state for user name input
     var enteredNickname by remember { mutableStateOf("") }
 
-    // Отображение Snackbar при необходимости
+    // Display Snackbar when needed
 
     Scaffold(
         scaffoldState = scaffoldState,
@@ -66,14 +66,14 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                // Если пользователь уже существует, показать приветствие
+                // If user already exists, show welcome message
                 if (user != null) {
                     Text(
                         text = "Welcome, ${user?.userName}!",
                         style = MaterialTheme.typography.h6
                     )
                 } else {
-                    // Если нет пользователя, показать форму ввода
+                    // If no user exists, show input form
                     Text(
                         text = "Please enter your nickname:",
                         style = MaterialTheme.typography.subtitle1
@@ -87,12 +87,12 @@ fun HomeScreen(
                     )
                 }
 
-                // "Start" кнопка доступна только если введено имя
+                // "Start" button is only available if name is entered
                 Button(
                     onClick = {
-                        // Сохранить имя пользователя через ViewModel
+                        // Save user name through ViewModel
                         viewModel.saveUser(enteredNickname)
-                        // Навигация на следующий экран
+                        // Navigate to next screen
                         onStartClick(enteredNickname)
                     },
                     modifier = Modifier
@@ -115,7 +115,7 @@ fun PreviewHomeScreen() {
     MaterialTheme {
         HomeScreen(
             onStartClick = { nickname ->
-                // Действие при нажатии на "Start"
+                // Action when "Start" is clicked
                 println("Starting with nickname: $nickname")
             },
             viewModel = hiltViewModel()

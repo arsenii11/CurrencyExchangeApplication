@@ -113,6 +113,18 @@ dependencies {
 
     // Hilt Navigation Compose (if using Hilt for dependency injection)
     implementation "androidx.hilt:hilt-navigation-compose:1.0.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1" // Убедитесь, что версия актуальна
+    implementation "androidx.lifecycle:lifecycle-runtime-compose:2.6.1"
 
+    // ИСПРАВЛЕННЫЕ тестовые зависимости для JVM 1.8
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'io.mockk:mockk:1.12.8'  // Версия совместимая с JVM 1.8
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4'  // Версия совместимая с JVM 1.8
+    testImplementation 'androidx.arch.core:core-testing:2.1.0'  // Уже корректная версия
+
+    // Убираем kotlin-test так как он требует более новую версию Kotlin
+    // testImplementation 'kotlin-test:kotlin-test:1.9.10'  // УДАЛЕНО
+
+    // Дополнительные тестовые зависимости
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    testImplementation 'org.hamcrest:hamcrest:2.2'
 }
